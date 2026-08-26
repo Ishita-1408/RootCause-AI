@@ -15,7 +15,6 @@ from apps.api.routers import (
     ai,
     analytics,
     anomalies,
-    auth,
     database,
     datasets,
     diagnostics,
@@ -93,7 +92,6 @@ def create_app() -> FastAPI:
 
     # 4. Include API Routers First (highest priority)
     app.include_router(health.router)
-    app.include_router(auth.router)
     app.include_router(database.router)
     app.include_router(datasets.router)
     app.include_router(analytics.router)

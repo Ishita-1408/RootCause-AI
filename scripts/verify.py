@@ -4,7 +4,7 @@
 Executes all verification tiers:
 1. Ruff code formatting & linting
 2. Mypy static type checking
-3. Pytest backend test suite (269+ tests)
+3. Pytest backend test suite (258+ tests)
 4. Vitest frontend test suite
 5. Vite frontend production build
 6. Canonical forensic causal benchmark (Phase B)

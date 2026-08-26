@@ -54,13 +54,6 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://api.openai.com/v1"
     llm_timeout_seconds: float = 30.0
 
-    # Authentication & Security Configuration
-    auth_enabled: bool = False
-    admin_api_key: str | None = None
-    analyst_api_key: str | None = None
-    viewer_api_key: str | None = None
-    demo_auth_token: str = "rc-demo-token-2026"
-
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: Any) -> list[str]:

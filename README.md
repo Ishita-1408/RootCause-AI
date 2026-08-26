@@ -7,12 +7,13 @@
 [![React](https://img.shields.io/badge/React-18.3-61DAFB.svg)](https://reactjs.org/)
 [![Top-1 Accuracy](https://img.shields.io/badge/Canonical%20Top--1-100%25%20(6%2F6)-brightgreen.svg)]()
 [![Hallucination Rate](https://img.shields.io/badge/Claim%20Hallucination%20Rate-0.0%25-brightgreen.svg)]()
-[![Pytest](https://img.shields.io/badge/Pytest-269%20passed-success.svg)]()
+[![Pytest](https://img.shields.io/badge/Pytest-258%20passed-success.svg)]()
 [![Type Checked](https://img.shields.io/badge/Mypy-strict%20checked-blue.svg)]()
 
 > **Autonomous Business Investigation Platform with Deterministic Causal Hypothesis Ranking, Statistical Significance Bounds, and Zero-Hallucination Claim Firewalls.**
 
 🔗 **Live Production Demo:** [https://rootcause-ai-mcbj.onrender.com](https://rootcause-ai-mcbj.onrender.com)
+*(The live demo deployment is intentionally unauthenticated so all analytical engines and AI memo generators can be evaluated directly without login.)*
 
 ---
 
@@ -38,7 +39,6 @@ When organizations delegate these diagnostic investigations to generic Large Lan
 - **🕸️ Forensic Evidence Graph (DAG):** Interactive 7-tier Directed Acyclic Graph (`INCIDENT` $\to$ `ANOMALY` $\to$ `DRIVER` $\to$ `EVIDENCE` $\to$ `SEGMENT` $\to$ `CORROBORATION` $\to$ `ROOT_CAUSE`) linking every finding to exact query provenance IDs.
 - **⏪ Deterministic Investigation Replay:** Immutable snapshot engine allowing step-by-step playback of multi-step diagnostic reasoning without non-deterministic re-execution.
 - **🥊 Executive Challenge Mode:** Adversarial counterfactual audit console evaluating executive inquiries (*"Why not AOV?"*, *"What contradicts this?"*, *"Show weakest evidence"*, *"What would change conclusion?"*).
-- **🔒 Dual-Mode API-Key & RBAC Security:** Pluggable authentication supporting safe local development (`AUTH_ENABLED=false`) and production token enforcement (`AUTH_ENABLED=true`) across Viewer, Analyst, and Admin roles.
 
 ---
 
@@ -55,7 +55,6 @@ flowchart TD
 
     subgraph API ["FastAPI Service Layer"]
         Router["API Endpoints (/api/v1)"]
-        Auth["RBAC Guard (Viewer < Analyst < Admin)"]
     end
 
     subgraph Agent ["Autonomous Investigation Agent Engine"]
@@ -79,7 +78,7 @@ flowchart TD
     end
 
     UI & GraphUI & ReplayUI & ChallengeUI --> Router
-    Router --> Auth --> Planner
+    Router --> Planner
     Planner --> Executor
     Executor --> Marts & Daily & Cohorts
     Marts & Daily --> Decomp & Stat
@@ -114,7 +113,7 @@ RootCause AI is evaluated against 6 canonical business failure scenarios derived
 | **Backend & API** | Python 3.12, FastAPI, Pydantic v2, Uvicorn, uv |
 | **Statistical & ML** | SciPy, Statsmodels, Scikit-Learn, Welch $t$-test, Wilson bounds, PELT |
 | **Frontend & UI** | React 18, TypeScript, Vite, TailwindCSS, Lucide Icons |
-| **Quality & MLOps** | Pytest (269 tests), Vitest, Mypy, Ruff, Docker, GitHub Actions |
+| **Quality & MLOps** | Pytest (258 tests), Vitest (5 tests), Mypy, Ruff, Docker, GitHub Actions |
 
 ---
 
@@ -191,14 +190,14 @@ RootCauseAI/
 ├── apps/
 │   ├── ai/                    # Natural language memo synthesizer
 │   ├── analytics/             # Deterministic calculations, stats, graph, replay, challenge
-│   ├── api/                   # FastAPI routing, auth, connection management
+│   ├── api/                   # FastAPI endpoints, database connection, and config
 │   └── web/                   # React 18 + Vite + TypeScript frontend SPA
 ├── evaluation/
 │   ├── hallucination/         # Claim-level hallucination verification framework
 │   ├── metrics/               # Causal evaluation metrics (Top-1, Top-3, MRR, Grounding)
 │   ├── runners/               # Benchmark execution runners
 │   └── scenarios/             # 6 canonical benchmark business failure scenarios
-├── tests/                     # 269 backend unit & integration tests
+├── tests/                     # 258 backend unit & integration tests
 ├── scripts/                   # Ingestion, mart building, smoke tests, verify.py
 ├── docs/                      # Comprehensive technical documentation
 │   ├── ARCHITECTURE.md        # System design, data flow, and causal hierarchy

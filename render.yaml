@@ -28,11 +28,6 @@ services:
       - key: CORS_ORIGINS
         value: '["*"]'
 
-      # Authentication
-      # Keep disabled for the public portfolio demo.
-      - key: AUTH_ENABLED
-        value: "false"
-
       # Supabase PostgreSQL
       # Use the Supabase SESSION POOLER URL on port 5432.
       - key: DATABASE_URL

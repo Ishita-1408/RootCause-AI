@@ -4,7 +4,6 @@ import { apiClient } from '../services/api';
 describe('RootCause AI API Client', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    apiClient.setApiKey(null);
   });
 
   it('detectAnomalies calls /api/v1/anomalies/detect and returns data', async () => {
@@ -53,27 +52,6 @@ describe('RootCause AI API Client', () => {
     expect(res.metric).toBe('total_gmv');
     expect(res.anomalies_count).toBe(1);
     expect(res.results[0].z_score).toBe(12.16);
-  });
-
-  it('attaches X-API-Key header when API key is set', async () => {
-    apiClient.setApiKey('test_secret_admin_key');
-    expect(apiClient.getApiKey()).toBe('test_secret_admin_key');
-
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ status: 'ok' }),
-    });
-
-    await apiClient.checkHealth();
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      '/api/v1/health',
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          'X-API-Key': 'test_secret_admin_key',
-        }),
-      })
-    );
   });
 
   it('investigateRootCause calls /api/v1/rootcause/investigate and returns data', async () => {

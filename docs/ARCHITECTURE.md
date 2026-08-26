@@ -26,7 +26,6 @@ flowchart TD
 
     subgraph API ["API & Routing Layer (FastAPI)"]
         Router["FastAPI Routers (/api/v1)"]
-        Auth["RBAC & Security Guard (Viewer < Analyst < Admin)"]
     end
 
     subgraph Agent ["Autonomous Investigation Agent Engine"]
@@ -54,7 +53,7 @@ flowchart TD
     ReplayUI --> Router
     ChallengeUI --> Router
 
-    Router --> Auth --> Planner
+    Router --> Planner
     Planner --> Executor
     Executor --> Marts
     Executor --> DailyKPIs
@@ -114,9 +113,7 @@ RootCause AI classifies all analytical findings into a formal 5-tier causal supp
 
 ---
 
-## 5. Security & RBAC Architecture
+## 5. Security & Access Model
 
-- **`AUTH_ENABLED=false`:** Safe development mode; automatically defaults to `Role.ADMIN`.
-- **`AUTH_ENABLED=true`:** Production mode; strictly enforces `X-API-Key` or `Authorization: Bearer <token>` against configured secrets.
-- **Role Hierarchy:**
-  $$\text{Viewer (1)} < \text{Analyst (2)} < \text{Admin (3)}$$
+- **Public Demo & Evaluation:** RootCause AI exposes analytical and AI investigation services directly through a FastAPI backend. The demo deployment is intentionally unauthenticated so the system can be evaluated directly.
+- **Environment Isolation:** Database credentials and optional LLM API keys are managed securely via environment variables on the backend, with zero credentials exposed to client-side frontend code.

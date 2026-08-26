@@ -27,10 +27,10 @@ A rigorous Data Science and ML Engineering project requires transparency regardi
 
 ---
 
-## 4. Authentication: API-Key RBAC vs. Enterprise IAM
+## 4. Authentication & Access Control
 
-- **Current Implementation:** Dual-mode authentication (`AUTH_ENABLED=true/false`) with `X-API-Key` and `Authorization: Bearer <token>` enforcing a 3-tier Role-Based Access Control hierarchy (`Viewer < Analyst < Admin`).
-- **Limitation:** The current release does not include OAuth2/OIDC/SAML integration (e.g., Okta, Auth0, Microsoft Entra ID). It is designed for microservice API integration and internal analytics tooling.
+- **Current Implementation:** The demo deployment does not currently implement application-user authentication or RBAC. The analytical and AI investigation endpoints are exposed directly through FastAPI so that the live demo and benchmark suites can be evaluated immediately without friction.
+- **Production Integration Note:** In enterprise multi-tenant deployments, integrating an API Gateway or corporate identity provider (OAuth2/OIDC/SAML like Okta or Microsoft Entra ID) in front of the FastAPI service is standard.
 
 ---
 

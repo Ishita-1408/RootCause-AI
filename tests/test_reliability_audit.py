@@ -3,8 +3,6 @@
 from datetime import date
 from unittest.mock import patch
 
-import pytest
-from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from apps.analytics.agent.models import (
@@ -20,8 +18,6 @@ from apps.analytics.replay import (
     get_investigation_snapshot,
     register_investigation_snapshot,
 )
-from apps.api.auth import AuthUser, Role, get_current_user, require_role
-from apps.api.config import Settings
 from apps.api.db.connection import check_database_connection, get_db_connection
 from apps.api.main import app
 
@@ -57,57 +53,7 @@ def test_database_failure_injection_returns_false_safely() -> None:
 
 
 # ============================================================================
-# 2. Security & RBAC Enforcement
-# ============================================================================
-def test_auth_disabled_mode_allows_dev_admin() -> None:
-    """When AUTH_ENABLED=False, system provides default admin context."""
-    with patch("apps.api.config.get_settings") as mock_settings:
-        mock_settings.return_value = Settings(auth_enabled=False)
-        user = get_current_user()
-        assert user.username == "local-dev-user"
-        assert user.role == Role.ADMIN
-
-
-def test_auth_enabled_mode_rejects_unauthenticated_request() -> None:
-    """When AUTH_ENABLED=True, missing credentials raise HTTP 401."""
-    with patch("apps.api.config.get_settings") as mock_settings:
-        mock_settings.return_value = Settings(
-            auth_enabled=True,
-            admin_api_key="secret_admin_key_123",
-        )
-        with pytest.raises(HTTPException) as exc_info:
-            get_current_user(api_key=None, bearer=None)
-        assert exc_info.value.status_code == 401
-
-
-def test_auth_enabled_mode_accepts_valid_admin_key() -> None:
-    """When AUTH_ENABLED=True, valid admin key grants Admin privileges."""
-    with patch("apps.api.config.get_settings") as mock_settings:
-        mock_settings.return_value = Settings(
-            auth_enabled=True,
-            admin_api_key="secret_admin_key_123",
-        )
-        user = get_current_user(api_key="secret_admin_key_123", bearer=None)
-        assert user.role == Role.ADMIN
-        assert user.username == "admin-service"
-
-
-def test_rbac_role_hierarchy_enforcement() -> None:
-    """Verify role permissions: Viewer (1) < Analyst (2) < Admin (3)."""
-    viewer = AuthUser(username="v", role=Role.VIEWER)
-    analyst = AuthUser(username="a", role=Role.ANALYST)
-    admin = AuthUser(username="ad", role=Role.ADMIN)
-
-    analyst_checker = require_role(Role.ANALYST)
-    assert analyst_checker(analyst) == analyst
-    assert analyst_checker(admin) == admin
-    with pytest.raises(HTTPException) as exc:
-        analyst_checker(viewer)
-    assert exc.value.status_code == 403
-
-
-# ============================================================================
-# 3. Evidence Graph DAG Integrity & Edge Weight Constraints
+# 2. Evidence Graph DAG Integrity & Edge Weight Constraints
 # ============================================================================
 def test_evidence_graph_integrity_and_bounded_weights() -> None:
     """Verify DAG is strictly connected with non-negative weights and no cycles."""

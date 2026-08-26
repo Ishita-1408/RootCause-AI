@@ -38,7 +38,6 @@ DATABASE_PORT=5432
 DATABASE_NAME="postgres"
 DATABASE_USER="postgres"
 DATABASE_PASSWORD="your-password"
-AUTH_ENABLED=false
 ```
 
 ### Step 3: Install Dependencies
@@ -157,5 +156,5 @@ Expected Output:
    ```
 3. Set environment variables:
    - `DATABASE_URL` = Your production PostgreSQL / Supabase connection string.
-   - `AUTH_ENABLED` = `true` (enforces API key / Bearer token security).
-   - `ADMIN_API_KEY` = Secret administrative token.
+   - `CORS_ORIGINS` = Allowed frontend domains (e.g. `'["*"]'`).
+   - `LLM_API_KEY` = (Optional) OpenAI or Gemini API key for AI memo synthesis.

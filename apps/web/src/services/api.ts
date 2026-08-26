@@ -17,7 +17,6 @@ import {
 } from '../types/api';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
-const API_KEY_STORAGE_KEY = 'rootcause_api_key';
 
 export class APIError extends Error {
   status: number;
@@ -31,26 +30,13 @@ export class APIError extends Error {
   }
 }
 
-function getStoredApiKey(): string | null {
-  try {
-    return localStorage.getItem(API_KEY_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
-  const apiKey = getStoredApiKey();
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
-
-  if (apiKey) {
-    headers['X-API-Key'] = apiKey;
-  }
 
   try {
     const res = await fetch(url, {
@@ -85,24 +71,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const apiClient = {
-  /** Get currently stored API key */
-  getApiKey(): string | null {
-    return getStoredApiKey();
-  },
-
-  /** Set or clear stored API key */
-  setApiKey(key: string | null): void {
-    try {
-      if (key) {
-        localStorage.setItem(API_KEY_STORAGE_KEY, key);
-      } else {
-        localStorage.removeItem(API_KEY_STORAGE_KEY);
-      }
-    } catch {
-      // Ignore localStorage errors in non-browser environments
-    }
-  },
-
   /** Check backend health */
   async checkHealth(): Promise<{ status: string }> {
     return request<{ status: string }>('/api/v1/health');
