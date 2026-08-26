@@ -1,0 +1,66 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Backend API Service (FastAPI + Python 3.12 + Uvicorn)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rootcause-ai-backend:latest
+    container_name: rootcause-backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - APP_NAME=${APP_NAME:-RootCause AI}
+      - APP_VERSION=${APP_VERSION:-0.1.0}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:80,http://frontend:80}
+      - DATABASE_URL=${DATABASE_URL:-}
+      - DATABASE_HOST=${DATABASE_HOST:-localhost}
+      - DATABASE_PORT=${DATABASE_PORT:-5432}
+      - DATABASE_NAME=${DATABASE_NAME:-postgres}
+      - DATABASE_USER=${DATABASE_USER:-postgres}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-}
+      - DATABASE_CONNECT_TIMEOUT=${DATABASE_CONNECT_TIMEOUT:-5}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://api.openai.com/v1}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-30.0}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - rootcause-network
+
+  # ---------------------------------------------------------------------------
+  # Frontend Web Dashboard (React + TypeScript + Vite + Nginx)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    image: rootcause-ai-frontend:latest
+    container_name: rootcause-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - rootcause-network
+
+networks:
+  rootcause-network:
+    driver: bridge

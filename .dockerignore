@@ -1,0 +1,35 @@
+# Git & GitHub
+.git
+.github
+.gitignore
+
+# Environment & Secrets (NEVER bake secrets into images)
+.env
+.env.*
+*.pem
+*.key
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+ENV
+
+# Node & Frontend artifacts
+node_modules
+apps/web/node_modules
+apps/web/dist
+apps/web/.vite
+
+# Logs & scratch files
+*.log
+scratch/
+brain/
+.gemini/
+notebooks/
