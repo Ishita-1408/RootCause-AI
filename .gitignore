@@ -2,48 +2,62 @@
 .env
 .env.*
 !.env.example
+.env.local
+.env.production
 
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.pyo
 .venv/
 venv/
+env/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
-# Node
-node_modules/
-.next/
-out/
-dist/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Data
-data/raw/*
-data/processed/*
-data/synthetic/*
-
-# Logs
-*.log
-
-# Coverage
 .coverage
 htmlcov/
 
-# Temporary
+# Node & Frontend Build Artifacts
+node_modules/
+apps/web/node_modules/
+apps/web/dist/
+dist/
+.next/
+out/
+.npm/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data & Local Database Files
+data/raw/*
+data/processed/*
+data/synthetic/*
+*.duckdb
+*.sqlite
+*.db
+pgdata/
+
+# Logs & Debugging
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary & Antigravity Artifacts
 *.tmp
 *.temp
-
-# Antigravity IDE and scratch artifacts
 scratch/
 .gemini/
 brain/

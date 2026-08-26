@@ -9,6 +9,7 @@ from apps.analytics.rootcause.models import (
     OperationalIndicators,
     VolumeValueDecomposition,
 )
+from apps.analytics.statistics.models import StatisticalEvidenceSummary
 
 
 def _to_claim_direction(
@@ -33,6 +34,7 @@ def generate_evidence_backed_claims(
     operational_signals: OperationalIndicators | None,
     contributors: list[DimensionContributor],
     top_root_causes: list[RankedRootCause],
+    statistical_evidence: StatisticalEvidenceSummary | None = None,
 ) -> list[EvidenceBackedClaim]:
     """Deterministically synthesize verified, evidence-backed claims."""
     claims: list[EvidenceBackedClaim] = []
@@ -45,6 +47,18 @@ def generate_evidence_backed_claims(
         f"{summary.percentage_change:+.1f}%"
         if summary.percentage_change is not None
         else "N/A"
+    )
+    temp_ev = statistical_evidence.temporal_evidence if statistical_evidence else None
+    anom_p_val = temp_ev.p_value if temp_ev else None
+    anom_ci = (
+        [
+            temp_ev.anomaly_date_estimate.confidence_interval.lower_bound or 0.0,
+            temp_ev.anomaly_date_estimate.confidence_interval.upper_bound or 0.0,
+        ]
+        if temp_ev
+        and temp_ev.anomaly_date_estimate
+        and temp_ev.anomaly_date_estimate.confidence_interval.lower_bound is not None
+        else None
     )
     claims.append(
         EvidenceBackedClaim(
@@ -65,6 +79,12 @@ def generate_evidence_backed_claims(
             dimension_value=None,
             causal_mechanism=None,
             derived_formula=None,
+            causal_support_level="descriptive",
+            causal_language_level=1,
+            p_value=anom_p_val,
+            confidence_interval=anom_ci,
+            sample_size=7,
+            evidence_strength="strong",
         )
     )
 

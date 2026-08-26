@@ -1,7 +1,5 @@
-"""Pydantic data models for Phase 5A Daily Time-Series Anomaly Detection."""
-
 from datetime import date
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -86,3 +84,7 @@ class AnomalyDetectionResponse(BaseModel):
     total_observations: int
     anomalies_count: int
     results: list[AnomalyResult]
+    change_point: Any | None = Field(
+        default=None,
+        description="Optional statistical change-point analysis over the series",
+    )

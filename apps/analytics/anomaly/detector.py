@@ -164,6 +164,12 @@ def run_anomaly_detection(
 
     anomalies_count = sum(1 for r in results if r.is_anomaly)
 
+    from apps.analytics.change_detection.detector import detect_change_point
+
+    change_point = (
+        detect_change_point(observations) if len(observations) >= 10 else None
+    )
+
     return AnomalyDetectionResponse(
         metric=metric,
         product_category=product_category,
@@ -175,4 +181,5 @@ def run_anomaly_detection(
         total_observations=len(results),
         anomalies_count=anomalies_count,
         results=results,
+        change_point=change_point,
     )

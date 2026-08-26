@@ -18,6 +18,7 @@ from apps.analytics.agent.models import (
 from apps.analytics.agent.planner import generate_initial_plan
 from apps.analytics.agent.policies import should_terminate
 from apps.analytics.agent.ranker import rank_evidence
+from apps.analytics.statistics import build_statistical_evidence_summary
 
 logger = logging.getLogger(__name__)
 
@@ -86,16 +87,47 @@ class AutonomousInvestigationAgent:
         else:
             status_literal = "completed"
 
-        # 6. Generate Deterministic Evidence-Backed Claims (Phase H)
+        # 6. Compute Change-Point Analysis (Phase J)
+        from datetime import timedelta
+
+        from apps.analytics.change_detection import run_change_point_detection
+
+        cp_analysis = None
+        try:
+            with self.conn.transaction():
+                start_d = request.anomaly_date - timedelta(days=14)
+                end_d = request.anomaly_date
+                cp_resp = run_change_point_detection(
+                    conn=self.conn,
+                    metric=request.metric,
+                    start_date=start_d,
+                    end_date=end_d,
+                    minimum_segment_size=3,
+                )
+                cp_analysis = cp_resp.change_point
+        except Exception:
+            cp_analysis = None
+
+        # 7. Synthesize Statistical Confidence & Significance Evidence (Phase K)
+        stat_evidence = build_statistical_evidence_summary(
+            summary=rc_resp.summary,
+            decomposition=rc_resp.decomposition,
+            operational_signals=rc_resp.operational_indicators,
+            contributors=rc_resp.ranked_contributors,
+            cp_analysis=cp_analysis,
+        )
+
+        # 8. Generate Deterministic Evidence-Backed Claims (Phase H & K)
         candidate_claims = generate_evidence_backed_claims(
             summary=rc_resp.summary,
             decomposition=rc_resp.decomposition,
             operational_signals=rc_resp.operational_indicators,
             contributors=rc_resp.ranked_contributors,
             top_root_causes=top_causes,
+            statistical_evidence=stat_evidence,
         )
 
-        # 7. Apply Claim Verification Firewall (Phase H)
+        # 9. Apply Claim Verification Firewall (Phase H & K)
         from evaluation.hallucination.extractor import extract_evidence_from_response
 
         # Build initial response container to extract analytical evidence pool
@@ -112,6 +144,8 @@ class AutonomousInvestigationAgent:
             executive_summary=exec_summary,
             key_findings=[],
             evidence_backed_claims=[],
+            change_point_analysis=cp_analysis,
+            statistical_evidence=stat_evidence,
             recommended_actions=recommended_actions,
             limitations=rc_resp.limitations,
             termination_reason=state.termination_reason,
@@ -126,7 +160,22 @@ class AutonomousInvestigationAgent:
             scenario_date=request.anomaly_date,
         )
 
-        return InvestigationAgentResponse(
+        # 10. Build Structured Evidence Graph (Phase M)
+        from apps.analytics.graph.builder import build_evidence_graph
+        from apps.analytics.replay.engine import register_investigation_snapshot
+
+        ev_graph = build_evidence_graph(
+            metric_name=request.metric,
+            anomaly_date=str(request.anomaly_date),
+            observed_value=rc_resp.summary.observed_value,
+            baseline_value=rc_resp.summary.baseline_value or 0.0,
+            ranked_causes=top_causes,
+            statistical_evidence=stat_evidence,
+            dimensional_breakdowns=rc_resp.ranked_contributors,
+            session_id=state.investigation_id,
+        )
+
+        final_response = InvestigationAgentResponse(
             investigation_id=state.investigation_id,
             anomaly_summary=rc_resp.summary,
             investigation_status=status_literal,
@@ -139,12 +188,20 @@ class AutonomousInvestigationAgent:
             executive_summary=exec_summary,
             key_findings=final_findings[:4],
             evidence_backed_claims=verified_claims,
+            change_point_analysis=cp_analysis,
+            statistical_evidence=stat_evidence,
+            evidence_graph=ev_graph,
             recommended_actions=recommended_actions,
             limitations=rc_resp.limitations,
             termination_reason=state.termination_reason,
             model=model_name,
             is_fallback=is_fallback,
         )
+
+        # Register immutable replay snapshot
+        register_investigation_snapshot(final_response)
+
+        return final_response
 
     def stream_investigation(
         self, request: InvestigationAgentRequest
@@ -289,6 +346,30 @@ class AutonomousInvestigationAgent:
         else:
             status_literal = "completed"
 
+        # Compute Statistical Evidence Summary (Phase K)
+        stat_evidence = build_statistical_evidence_summary(
+            summary=rc_resp.summary,
+            decomposition=rc_resp.decomposition,
+            operational_signals=rc_resp.operational_indicators,
+            contributors=rc_resp.ranked_contributors,
+            cp_analysis=None,
+        )
+
+        # Compute Structured Evidence Graph (Phase M)
+        from apps.analytics.graph.builder import build_evidence_graph
+        from apps.analytics.replay.engine import register_investigation_snapshot
+
+        ev_graph = build_evidence_graph(
+            metric_name=request.metric,
+            anomaly_date=str(request.anomaly_date),
+            observed_value=rc_resp.summary.observed_value,
+            baseline_value=rc_resp.summary.baseline_value or 0.0,
+            ranked_causes=top_causes,
+            statistical_evidence=stat_evidence,
+            dimensional_breakdowns=rc_resp.ranked_contributors,
+            session_id=state.investigation_id,
+        )
+
         final_response = InvestigationAgentResponse(
             investigation_id=state.investigation_id,
             anomaly_summary=rc_resp.summary,
@@ -301,12 +382,16 @@ class AutonomousInvestigationAgent:
             operational_signals=rc_resp.operational_indicators,
             executive_summary=exec_summary,
             key_findings=key_findings,
+            statistical_evidence=stat_evidence,
+            evidence_graph=ev_graph,
             recommended_actions=recommended_actions,
             limitations=rc_resp.limitations,
             termination_reason=state.termination_reason,
             model=model_name,
             is_fallback=is_fallback,
         )
+
+        register_investigation_snapshot(final_response)
 
         yield {
             "event": "stage_update",

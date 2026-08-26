@@ -110,7 +110,7 @@ def rank_evidence(
                 state_val = top_state_slice.dimension_value
                 state_delta = top_state_slice.absolute_change
                 evidence_chain.append(
-                    f"Concentrated in {state_val} ({state_pct:+.1f}% share, "
+                    f"Growth concentrated in {state_val} ({state_pct:+.1f}% share, "
                     f"R$ {state_delta:+,.2f})."
                 )
             evidence_chain.append(
@@ -172,11 +172,8 @@ def rank_evidence(
             ]
             if top_cat_slice:
                 cat_val = top_cat_slice.dimension_value
-                cat_pct = top_cat_slice.contribution_pct or 0.0
-                cat_delta = top_cat_slice.absolute_change
                 evidence_chain.append(
-                    f"Concentrated in {cat_val} ({cat_pct:+.1f}% share, "
-                    f"R$ {cat_delta:+,.2f})."
+                    f"Shift concentrated in product category '{cat_val}'."
                 )
             evidence_chain.append(
                 f"Root Cause: Average Order Value {aov_dir} (Verified mart math)."
@@ -276,7 +273,7 @@ def rank_evidence(
 
     # 3. Evaluate Granular Dimensional Slices (Affected Segments)
     for c in contributors:
-        pct = min(c.contribution_pct or 0.0, 100.0)
+        pct = c.contribution_pct or 0.0
         score = calculate_root_cause_score(
             pct, c.absolute_change, c.dimension, is_causal_mechanism=False
         )

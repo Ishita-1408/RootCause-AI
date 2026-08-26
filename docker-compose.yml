@@ -1,33 +1,37 @@
 services:
   # ---------------------------------------------------------------------------
-  # Backend API Service (FastAPI + Python 3.12 + Uvicorn)
+  # Unified Full-Stack Application (FastAPI + React SPA)
   # ---------------------------------------------------------------------------
-  backend:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: rootcause-ai-backend:latest
-    container_name: rootcause-backend
+    image: rootcause-ai:latest
+    container_name: rootcause-app
     restart: unless-stopped
     ports:
       - "${PORT:-8000}:8000"
     environment:
       - APP_NAME=${APP_NAME:-RootCause AI}
-      - APP_VERSION=${APP_VERSION:-0.1.0}
+      - APP_VERSION=${APP_VERSION:-1.0.0}
       - ENVIRONMENT=${ENVIRONMENT:-production}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:80,http://frontend:80}
-      - DATABASE_URL=${DATABASE_URL:-}
-      - DATABASE_HOST=${DATABASE_HOST:-localhost}
+      - AUTH_ENABLED=${AUTH_ENABLED:-false}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8000,http://localhost:5173,http://127.0.0.1:5173}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/rootcause_db}
+      - DATABASE_HOST=${DATABASE_HOST:-postgres}
       - DATABASE_PORT=${DATABASE_PORT:-5432}
-      - DATABASE_NAME=${DATABASE_NAME:-postgres}
+      - DATABASE_NAME=${DATABASE_NAME:-rootcause_db}
       - DATABASE_USER=${DATABASE_USER:-postgres}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-postgres}
       - DATABASE_CONNECT_TIMEOUT=${DATABASE_CONNECT_TIMEOUT:-5}
       - LLM_API_KEY=${LLM_API_KEY:-}
       - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
       - LLM_BASE_URL=${LLM_BASE_URL:-https://api.openai.com/v1}
       - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-30.0}
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
       interval: 15s
@@ -38,28 +42,31 @@ services:
       - rootcause-network
 
   # ---------------------------------------------------------------------------
-  # Frontend Web Dashboard (React + TypeScript + Vite + Nginx)
+  # Optional Local PostgreSQL Database Service
   # ---------------------------------------------------------------------------
-  frontend:
-    build:
-      context: ./apps/web
-      dockerfile: Dockerfile
-    image: rootcause-ai-frontend:latest
-    container_name: rootcause-frontend
+  postgres:
+    image: postgres:16-alpine
+    container_name: rootcause-postgres
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-5173}:80"
-    depends_on:
-      backend:
-        condition: service_healthy
+      - "${DB_HOST_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-rootcause_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/healthz"]
-      interval: 15s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-postgres} -d ${DATABASE_NAME:-rootcause_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - rootcause-network
+
+volumes:
+  pgdata:
+    driver: local
 
 networks:
   rootcause-network:

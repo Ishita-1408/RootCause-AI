@@ -1,0 +1,13 @@
+# Node modules and build output
+node_modules
+dist
+.vite
+
+# Environment and secrets
+.env
+.env.*
+*.log
+
+# Git
+.git
+.github

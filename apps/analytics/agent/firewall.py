@@ -42,6 +42,14 @@ def apply_claim_firewall(
             evidence_ids=[c.evidence_id],
             causal_mechanism=c.causal_mechanism,
             derived_formula=c.derived_formula,
+            causal_support_level=c.causal_support_level,
+            statistical_test=c.statistical_test,
+            p_value=c.p_value,
+            confidence_interval=c.confidence_interval,
+            effect_size=c.effect_size,
+            sample_size=c.sample_size,
+            evidence_strength=c.evidence_strength,
+            causal_language_level=c.causal_language_level,
         )
 
         res = verify_single_claim(

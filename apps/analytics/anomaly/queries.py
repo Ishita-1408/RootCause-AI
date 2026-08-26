@@ -23,6 +23,11 @@ METRIC_EXPRESSIONS: dict[str, str] = {
         "THEN (100.0 * SUM(late_delivered_orders_count) / SUM(orders_count))::FLOAT "
         "ELSE NULL END"
     ),
+    "delivery": (
+        "CASE WHEN SUM(orders_count) > 0 "
+        "THEN (100.0 * SUM(late_delivered_orders_count) / SUM(orders_count))::FLOAT "
+        "ELSE NULL END"
+    ),
     "avg_review_score": "AVG(avg_review_score)::FLOAT",
 }
 

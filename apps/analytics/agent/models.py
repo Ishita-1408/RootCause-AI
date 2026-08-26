@@ -6,11 +6,16 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+from apps.analytics.change_detection.models import ChangePointResult
 from apps.analytics.rootcause.models import (
     AnomalySummary,
     DimensionContributor,
     OperationalIndicators,
     VolumeValueDecomposition,
+)
+from apps.analytics.statistics.models import (
+    CausalSupportLevel,
+    StatisticalEvidenceSummary,
 )
 
 ApprovedMetric = Literal[
@@ -152,6 +157,10 @@ class RankedRootCause(BaseModel):
         le=1.0,
         description="Statistical confidence score",
     )
+    causal_support_level: CausalSupportLevel = Field(
+        default="mechanistic",
+        description="Causal tier: descriptive, associational, mechanistic, causal",
+    )
 
 
 class InvestigationState(BaseModel):
@@ -178,19 +187,13 @@ class InvestigationState(BaseModel):
 
 
 class EvidenceBackedClaim(BaseModel):
-    """Factual assertion strictly backed by an analytical evidence record."""
+    """Verifiable claim tied deterministically to analytical evidence."""
 
-    evidence_id: str = Field(description="Unique ID of supporting evidence")
-    claim_type: Literal[
-        "anomaly",
-        "numerical",
-        "causal",
-        "segment",
-        "trend",
-        "operational",
-        "recommendation",
-    ]
-    subject: str = Field(description="Exact statement or claim text")
+    evidence_id: str = Field(
+        description="Immutable identifier of analytical evidence record"
+    )
+    claim_type: Literal["anomaly", "causal", "numerical", "operational", "segment"]
+    subject: str = Field(description="Exact statement of claim")
     metric: str
     value: float | None = None
     baseline_value: float | None = None
@@ -202,6 +205,24 @@ class EvidenceBackedClaim(BaseModel):
     causal_mechanism: str | None = None
     derived_formula: str | None = None
     is_verified: bool = True
+    causal_support_level: CausalSupportLevel = Field(
+        default="mechanistic",
+        description="Causal identification tier for claim",
+    )
+    statistical_test: str | None = None
+    p_value: float | None = None
+    confidence_interval: list[float] | None = None
+    effect_size: float | None = None
+    sample_size: int | None = None
+    evidence_strength: Literal["strong", "moderate", "weak", "insufficient"] | None = (
+        None
+    )
+    causal_language_level: int = Field(
+        default=3,
+        ge=1,
+        le=5,
+        description="Causal hierarchy level 1 to 5",
+    )
 
 
 class InvestigationAgentResponse(BaseModel):
@@ -219,6 +240,18 @@ class InvestigationAgentResponse(BaseModel):
     executive_summary: str
     key_findings: list[str]
     evidence_backed_claims: list[EvidenceBackedClaim] = Field(default_factory=list)
+    change_point_analysis: ChangePointResult | None = Field(
+        default=None,
+        description="Statistical regime shift analysis (temporal evidence)",
+    )
+    statistical_evidence: StatisticalEvidenceSummary | None = Field(
+        default=None,
+        description="Detailed statistical confidence evidence (Phase K)",
+    )
+    evidence_graph: Any | None = Field(
+        default=None,
+        description="Forensic Evidence Graph (Phase M)",
+    )
     recommended_actions: list[str]
     limitations: str
     termination_reason: str
