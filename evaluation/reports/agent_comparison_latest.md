@@ -6,7 +6,7 @@ This experiment quantitatively demonstrates how RootCause AI's current causal re
 
 - **Root-Cause Attribution Accuracy**: Top-1 accuracy improved from **66.7% to 100.0%** (+33.3% absolute), and MRR improved from **0.6667 to 1.0000** (+0.3333).
 - **Claim-Level Grounding & Hallucinations**: Claim grounding rose from **71.7% to 100.0%**, reducing claim hallucinations from **28.3% to 0.0%**.
-- **Execution Efficiency**: Complete causal soundness with an average latency of **366.4 ms** (vs 277.3 ms baseline).
+- **Execution Efficiency**: Complete causal soundness with an average latency of **604.6 ms** (vs 274.9 ms baseline).
 
 ## 2. Experimental Design
 
@@ -34,7 +34,7 @@ This experiment quantitatively demonstrates how RootCause AI's current causal re
 | **Adversarial Detection Rate** | 100.0% | **100.0%** | +0.0% | Invariant |
 | **Avg Investigation Steps** | 5.7 | 5.7 | +0.0 | 0.0% |
 | **Avg Analytical Tool Calls** | 5.5 | 5.5 | +0.0 | 0.0% |
-| **Avg Execution Latency** | 277.3 ms | 366.4 ms | +89.1 ms | +32.1% |
+| **Avg Execution Latency** | 274.9 ms | 604.6 ms | +329.7 ms | +119.9% |
 | **Total Material Claims** | 60 | 60 | +0 | Identical Scope |
 
 ## 4. Scenario-Level Results
