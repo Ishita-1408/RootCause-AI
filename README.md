@@ -1,5 +1,6 @@
 # RootCause AI
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7.svg)](https://rootcause-ai-mcbj.onrender.com)
 [![CI Quality Gate](https://github.com/Ishita-1408/RootCause-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/Ishita-1408/RootCause-AI/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
@@ -11,18 +12,20 @@
 
 > **Autonomous Business Investigation Platform with Deterministic Causal Hypothesis Ranking, Statistical Significance Bounds, and Zero-Hallucination Claim Firewalls.**
 
+🔗 **Live Production Demo:** [https://rootcause-ai-mcbj.onrender.com](https://rootcause-ai-mcbj.onrender.com)
+
 ---
 
 ## 📌 Executive Overview & The Problem
 
-Modern analytics and data science teams spend hundreds of hours answering executive questions like:
-> *"Why did GMV drop 28.4% on November 20th?"*
+Modern analytics, data science, and business intelligence teams spend hundreds of manual hours answering executive questions like:
+> *"Why did Gross Merchandise Value (GMV) drop 28.4% on November 20th?"*
 
-When organizations delegate these investigations to standard Large Language Models (LLMs), they face two fatal failure modes:
-1. **Numerical Hallucination:** LLMs invent plausible-sounding percentage shifts and contradictory figures not grounded in underlying transactional feature marts.
-2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly occurred (e.g., "São Paulo order volume dropped") with *why* it occurred (e.g., "Carrier transit delays increased by +4.2 days, causing severe delivery SLA breaches").
+When organizations delegate these diagnostic investigations to generic Large Language Models (LLMs), they encounter two fatal failure modes:
+1. **Numerical Hallucination:** LLMs invent plausible-sounding percentage shifts, incorrect baseline comparisons, and contradictory metrics not grounded in underlying transactional feature marts.
+2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly concentrated (e.g., "São Paulo order volume dropped") with *why* it occurred (e.g., "Carrier transit delays increased by +4.2 days, causing severe delivery SLA breaches").
 
-**RootCause AI** eliminates both failure modes through a deterministic architecture where **the LLM is NOT the source of numerical truth**. All metrics, mathematical decompositions, statistical significance bounds, and ranking algorithms are computed by deterministic Python and SQL engines, while an online Claim Verification Firewall guarantees 0% hallucinated claims in generated leadership memos.
+**RootCause AI** eliminates both failure modes through a deterministic architecture where **the LLM is NOT the source of numerical truth**. All metrics, mathematical variance decompositions, statistical significance bounds, and ranking algorithms are computed by deterministic Python and SQL engines, while an online Claim Verification Firewall guarantees 0% hallucinated claims in generated leadership memos.
 
 ---
 
@@ -107,11 +110,11 @@ RootCause AI is evaluated against 6 canonical business failure scenarios derived
 
 | Layer | Technologies |
 | :--- | :--- |
-| **Data & Database** | PostgreSQL, DuckDB, Polars, PyArrow, Psycopg 3 |
+| **Data & Database** | PostgreSQL (Supabase / Render), DuckDB, Polars, PyArrow, Psycopg 3 |
 | **Backend & API** | Python 3.12, FastAPI, Pydantic v2, Uvicorn, uv |
 | **Statistical & ML** | SciPy, Statsmodels, Scikit-Learn, Welch $t$-test, Wilson bounds, PELT |
 | **Frontend & UI** | React 18, TypeScript, Vite, TailwindCSS, Lucide Icons |
-| **Quality & MLOps** | Pytest (269+ tests), Vitest, Mypy, Ruff, Docker, GitHub Actions |
+| **Quality & MLOps** | Pytest (269 tests), Vitest, Mypy, Ruff, Docker, GitHub Actions |
 
 ---
 
@@ -167,20 +170,56 @@ Run the complete 8-tier verification suite with a single command:
 ```bash
 uv run python scripts/verify.py
 ```
-Or run individual benchmarks:
+Or run individual test suites:
 ```bash
-# Canonical Causal Benchmark (Phase B)
+# Fast pytest suite (269 tests)
+uv run pytest -q
+
+# Canonical Causal Benchmark
 uv run python -m evaluation.runners.run_benchmark --verbose
 
-# Claim-Level Hallucination Evaluator (Phase G)
+# Claim-Level Hallucination Evaluator
 uv run python -m evaluation.runners.run_hallucination_benchmark --verbose
+```
+
+---
+
+## 📂 Project Structure
+
+```
+RootCauseAI/
+├── apps/
+│   ├── ai/                    # Natural language memo synthesizer
+│   ├── analytics/             # Deterministic calculations, stats, graph, replay, challenge
+│   ├── api/                   # FastAPI routing, auth, connection management
+│   └── web/                   # React 18 + Vite + TypeScript frontend SPA
+├── evaluation/
+│   ├── hallucination/         # Claim-level hallucination verification framework
+│   ├── metrics/               # Causal evaluation metrics (Top-1, Top-3, MRR, Grounding)
+│   ├── runners/               # Benchmark execution runners
+│   └── scenarios/             # 6 canonical benchmark business failure scenarios
+├── tests/                     # 269 backend unit & integration tests
+├── scripts/                   # Ingestion, mart building, smoke tests, verify.py
+├── docs/                      # Comprehensive technical documentation
+│   ├── ARCHITECTURE.md        # System design, data flow, and causal hierarchy
+│   ├── BASELINE_VS_IMPROVED.md# Quantitative baseline vs improved agent experiment
+│   ├── DEMO_SCRIPT.md         # 3-minute interactive demo script
+│   ├── LIMITATIONS.md         # Senior-engineer scope & assumptions
+│   └── LOCAL_DEVELOPMENT.md   # Setup, seeding, testing, and deployment
+├── .github/workflows/ci.yml   # GitHub Actions CI quality gate
+├── render.yaml                # Render Web Service Blueprint
+├── build.sh                   # Render production build script
+├── Dockerfile                 # Multi-stage non-root container build
+├── docker-compose.yml         # Full-stack container orchestration
+├── pyproject.toml             # Python package dependencies & tool config
+└── README.md                  # GitHub portfolio centerpiece
 ```
 
 ---
 
 ## 🔬 3-Minute Interactive Demo Walkthrough
 
-1. **Launch App:** Open `http://localhost:5173` (or `http://localhost:8000`).
+1. **Launch Live Demo:** Open [https://rootcause-ai-mcbj.onrender.com](https://rootcause-ai-mcbj.onrender.com).
 2. **Select Anomaly:** Navigate to **What Changed** and select `2017-11-20` (GMV drop).
 3. **Run Investigation:** Observe the Autonomous Agent execute its 5 progressive diagnostic stages.
 4. **Inspect Evidence Graph:** Click **Evidence Graph** in the sidebar to trace the 7-tier DAG from Incident to Root Cause.
@@ -188,16 +227,6 @@ uv run python -m evaluation.runners.run_hallucination_benchmark --verbose
 6. **Challenge Conclusion:** Open **Challenge Mode** and query *"Why not Average Order Value?"* to review the mathematical decomposition proof.
 
 *See [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) for full timestamp breakdown.*
-
----
-
-## 📄 Project Documentation
-
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — System architecture, data flow, and causal hierarchy.
-- [`docs/LOCAL_DEVELOPMENT.md`](docs/LOCAL_DEVELOPMENT.md) — Developer setup, seeding, verification, and deployment.
-- [`docs/BASELINE_VS_IMPROVED.md`](docs/BASELINE_VS_IMPROVED.md) — Quantitative experimental baseline comparison.
-- [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — Engineering assumptions, observational scope, and production considerations.
-- [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — Complete 3-minute interactive investigation walkthrough.
 
 ---
 

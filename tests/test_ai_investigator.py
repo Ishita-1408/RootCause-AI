@@ -1,6 +1,5 @@
 """Unit and integration tests for Phase 5C AI Investigation Layer."""
 
-from apps.api.config import Settings
 import json
 from datetime import date
 from unittest.mock import MagicMock, patch
@@ -210,12 +209,13 @@ def test_openai_compatible_provider_mocked_http_success(
 
 
 # 5. Test Missing API Key Raises Error on Direct OpenAI Provider Init
-def test_missing_api_key_raises_value_error(monkeypatch) -> None:
+def test_missing_api_key_raises_value_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test OpenAICompatibleProvider requires API key."""
     monkeypatch.delenv("LLM_API_KEY", raising=False)
 
     with pytest.raises(ValueError, match="LLM_API_KEY is not configured"):
         OpenAICompatibleProvider()
+
 
 # 6. Test Provider Timeout / Network Failure Fallback Safety
 def test_provider_timeout_falls_back_safely(
