@@ -42,3 +42,8 @@ htmlcov/
 # Temporary
 *.tmp
 *.temp
+
+# Antigravity IDE and scratch artifacts
+scratch/
+.gemini/
+brain/
