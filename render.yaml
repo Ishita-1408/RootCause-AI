@@ -2,39 +2,51 @@ services:
   - type: web
     name: rootcause-ai
     runtime: python
+
     buildCommand: bash build.sh
-    startCommand: python -m uv run uvicorn apps.api.main:app --host 0.0.0.0 --port $PORT --workers 2
+
+    startCommand: uv run uvicorn apps.api.main:app --host 0.0.0.0 --port $PORT
+
     healthCheckPath: /api/v1/health
+
     envVars:
+      # Runtime
       - key: PYTHON_VERSION
         value: 3.12.4
+
       - key: NODE_VERSION
         value: 20.18.0
+
       - key: ENVIRONMENT
         value: production
+
       - key: LOG_LEVEL
         value: INFO
+
+      # CORS
+      # Pydantic expects this as a JSON list.
       - key: CORS_ORIGINS
-        value: "*"
+        value: '["*"]'
+
+      # Authentication
+      # Keep disabled for the public portfolio demo.
+      - key: AUTH_ENABLED
+        value: "false"
+
+      # Supabase PostgreSQL
+      # Use the Supabase SESSION POOLER URL on port 5432.
       - key: DATABASE_URL
         sync: false
-      - key: DATABASE_HOST
-        sync: false
-      - key: DATABASE_PORT
-        value: "5432"
-      - key: DATABASE_NAME
-        value: postgres
-      - key: DATABASE_USER
-        sync: false
-      - key: DATABASE_PASSWORD
-        sync: false
-      - key: DATABASE_CONNECT_TIMEOUT
-        value: "5"
+
+      # Optional LLM configuration
       - key: LLM_API_KEY
         sync: false
+
       - key: LLM_MODEL
         value: gpt-4o-mini
+
       - key: LLM_BASE_URL
         value: https://api.openai.com/v1
+
       - key: LLM_TIMEOUT_SECONDS
         value: "30.0"
