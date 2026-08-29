@@ -208,16 +208,16 @@ def compute_proportion_confidence_interval(
             is_computable=False,
         )
 
-    p_hat = count / total
+    p_hat = min(max(count / total, 0.0), 1.0)
     alpha = 1.0 - confidence_level
     z = _approx_student_t_crit(df=1000.0, alpha=alpha)
 
     denom = 1.0 + (z**2) / total
     center = (p_hat + (z**2) / (2.0 * total)) / denom
-    margin = (
-        z * math.sqrt((p_hat * (1.0 - p_hat) / total) + (z**2) / (4.0 * (total**2)))
-    ) / denom
-    se = math.sqrt(p_hat * (1.0 - p_hat) / total) if total > 1 else 0.0
+    var_term = max(0.0, (p_hat * (1.0 - p_hat) / total) + (z**2) / (4.0 * (total**2)))
+    margin = (z * math.sqrt(var_term)) / denom
+    se_var = max(0.0, p_hat * (1.0 - p_hat) / total)
+    se = math.sqrt(se_var) if total > 1 else 0.0
 
     lower = max(0.0, center - margin)
     upper = min(1.0, center + margin)

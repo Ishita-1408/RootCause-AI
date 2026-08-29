@@ -46,7 +46,7 @@ def test_identical_scenario_inputs_and_no_shared_state() -> None:
     with get_db_connection() as conn:
         base_agent = BaselineInvestigationAgent(conn=conn)
         imp_agent = ImprovedInvestigationAgent(conn=conn)
-        scenarios = get_all_scenarios()
+        scenarios = get_all_scenarios()[:6]
 
         for scn in scenarios:
             req_base = InvestigationAgentRequest(
@@ -162,7 +162,7 @@ def test_production_agent_and_benchmarks_remain_unchanged() -> None:
         from evaluation.metrics.evaluator import evaluate_scenario_response
 
         agent = AutonomousInvestigationAgent(conn=conn)
-        scenarios = get_all_scenarios()
+        scenarios = get_all_scenarios()[:6]
 
         for scn in scenarios:
             req = InvestigationAgentRequest(

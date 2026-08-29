@@ -669,3 +669,53 @@ def test_causal_mechanism_aliases() -> None:
     assert canonicalize_mechanism("carrier_transit_delay") == "delivery"
     assert canonicalize_mechanism("logistics_fulfillment_bottleneck") == "delivery"
     assert canonicalize_mechanism("late_delivery_rate_pct") == "delivery"
+
+
+def test_difficulty_stratification_aggregation() -> None:
+    """Test aggregation of results across easy, medium, and hard difficulty tiers."""
+    r_easy = EvaluationResult(
+        scenario_id="SCN-001",
+        scenario_name="Easy Test",
+        ground_truth_primary="delivery",
+        top1_correct=True,
+        top3_correct=True,
+        reciprocal_rank=1.0,
+        difficulty="easy",
+    )
+    r_med = EvaluationResult(
+        scenario_id="SCN-002",
+        scenario_name="Medium Test",
+        ground_truth_primary="order_volume",
+        top1_correct=True,
+        top3_correct=True,
+        reciprocal_rank=1.0,
+        difficulty="medium",
+    )
+    r_hard = EvaluationResult(
+        scenario_id="SCN-003",
+        scenario_name="Hard Test",
+        ground_truth_primary="average_order_value",
+        top1_correct=False,
+        top3_correct=True,
+        reciprocal_rank=0.5,
+        difficulty="hard",
+    )
+
+    summary = aggregate_benchmark_results([r_easy, r_med, r_hard])
+
+    assert summary.scenarios_evaluated == 3
+    assert summary.top1_accuracy == round((2 / 3) * 100.0, 2)
+    assert summary.top3_accuracy == 100.0
+    assert summary.mrr == round((1.0 + 1.0 + 0.5) / 3, 4)
+
+    assert summary.easy_count == 1
+    assert summary.easy_top1_accuracy == 100.0
+    assert summary.easy_mrr == 1.0
+
+    assert summary.medium_count == 1
+    assert summary.medium_top1_accuracy == 100.0
+    assert summary.medium_mrr == 1.0
+
+    assert summary.hard_count == 1
+    assert summary.hard_top1_accuracy == 0.0
+    assert summary.hard_mrr == 0.5

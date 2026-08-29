@@ -67,6 +67,22 @@ class GroundTruthScenario(BaseModel):
     secondary_causes: list[GroundTruthRootCause] = Field(
         default_factory=list, description="Valid secondary drivers"
     )
+    acceptable_alternative_causes: list[GroundTruthRootCause] = Field(
+        default_factory=list,
+        description="Statistically acceptable alternative causes in complex multi-driver cases",
+    )
+    distractor_causes: list[str] = Field(
+        default_factory=list,
+        description="Plausible but non-dominant candidate distractors",
+    )
+    difficulty: Literal["easy", "medium", "hard"] = Field(
+        default="medium",
+        description="Scenario difficulty tier: easy (clear single driver), medium (multi-factor), hard (competing/noisy)",
+    )
+    is_insufficient_evidence: bool = Field(
+        default=False,
+        description="True if scenario has diffuse or insufficient evidence to establish a single dominant cause",
+    )
 
     # Incident Properties
     target_metric: Literal[

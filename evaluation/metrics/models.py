@@ -67,6 +67,14 @@ class EvaluationResult(BaseModel):
         default="", description="Why the investigation concluded"
     )
 
+    # Metadata & Stratification
+    difficulty: str = Field(
+        default="medium", description="Difficulty tier: easy, medium, or hard"
+    )
+    distractor_causes: list[str] = Field(
+        default_factory=list, description="Distractor causes identified in scenario"
+    )
+
     # Forensic Failure Analysis
     failure_explanation: str | None = Field(
         default=None,
@@ -111,6 +119,28 @@ class BenchmarkSummary(BaseModel):
     avg_execution_time_ms: float = Field(
         ..., description="Average execution latency in milliseconds"
     )
+
+    # Difficulty Stratification Breakdowns
+    easy_count: int = Field(default=0, description="Total easy difficulty scenarios")
+    easy_top1_accuracy: float | None = Field(
+        default=None, description="Top-1 accuracy for easy scenarios"
+    )
+    easy_mrr: float | None = Field(default=None, description="MRR for easy scenarios")
+    medium_count: int = Field(
+        default=0, description="Total medium difficulty scenarios"
+    )
+    medium_top1_accuracy: float | None = Field(
+        default=None, description="Top-1 accuracy for medium scenarios"
+    )
+    medium_mrr: float | None = Field(
+        default=None, description="MRR for medium scenarios"
+    )
+    hard_count: int = Field(default=0, description="Total hard difficulty scenarios")
+    hard_top1_accuracy: float | None = Field(
+        default=None, description="Top-1 accuracy for hard scenarios"
+    )
+    hard_mrr: float | None = Field(default=None, description="MRR for hard scenarios")
+
     results: list[EvaluationResult] = Field(
         default_factory=list, description="Per-scenario evaluation results"
     )

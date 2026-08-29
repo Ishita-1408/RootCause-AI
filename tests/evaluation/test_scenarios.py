@@ -10,10 +10,39 @@ from evaluation.scenarios import (
 
 
 def test_scenario_registry_count() -> None:
-    """Verify that at least 6 canonical incident scenarios are registered."""
+    """Verify that at least 100 canonical incident scenarios are registered."""
     scenarios = get_all_scenarios()
-    assert len(scenarios) >= 6
-    assert len(BENCHMARK_SCENARIOS) >= 6
+    assert len(scenarios) >= 100
+    assert len(BENCHMARK_SCENARIOS) >= 100
+
+
+def test_scenario_difficulty_distribution() -> None:
+    """Ensure Easy, Medium, and Hard tiers are all represented."""
+    scenarios = get_all_scenarios()
+    difficulties = {s.difficulty for s in scenarios}
+    assert difficulties == {"easy", "medium", "hard"}
+
+    easy_count = sum(1 for s in scenarios if s.difficulty == "easy")
+    medium_count = sum(1 for s in scenarios if s.difficulty == "medium")
+    hard_count = sum(1 for s in scenarios if s.difficulty == "hard")
+
+    assert easy_count >= 20
+    assert medium_count >= 30
+    assert hard_count >= 15
+
+
+def test_scenario_metric_coverage() -> None:
+    """Ensure all 5 core business metrics are covered in the benchmark."""
+    scenarios = get_all_scenarios()
+    metrics = {s.target_metric for s in scenarios}
+    expected_metrics = {
+        "total_gmv",
+        "orders_count",
+        "average_order_value",
+        "late_delivery_rate_pct",
+        "avg_review_score",
+    }
+    assert expected_metrics.issubset(metrics)
 
 
 def test_scenario_unique_ids() -> None:
@@ -41,6 +70,16 @@ def test_scenario_required_metadata() -> None:
         assert s.comparison_days >= 1
         assert s.expected_direction in ["increase", "decrease", "normal"]
         assert s.severity in ["normal", "warning", "critical"]
+        assert s.difficulty in ["easy", "medium", "hard"]
+        assert isinstance(s.distractor_causes, list)
+
+
+def test_no_ground_truth_leakage() -> None:
+    """Verify that scenario ID and expected cause are decoupled and not leaked."""
+    for s in get_all_scenarios():
+        # Description should not directly expose internal ground truth cause_id token
+        assert s.primary_cause.cause_id != s.name
+        assert s.primary_cause.cause_id != s.scenario_id
 
 
 def test_get_scenario_by_id_success() -> None:

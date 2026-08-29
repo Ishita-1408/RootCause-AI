@@ -33,6 +33,27 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
         if summary.mean_contribution_error is not None
         else "N/A"
     )
+    easy_acc = (
+        f"{summary.easy_top1_accuracy:.1f}%"
+        if summary.easy_top1_accuracy is not None
+        else "N/A"
+    )
+    easy_mrr_str = f"{summary.easy_mrr:.4f}" if summary.easy_mrr is not None else "N/A"
+    med_acc = (
+        f"{summary.medium_top1_accuracy:.1f}%"
+        if summary.medium_top1_accuracy is not None
+        else "N/A"
+    )
+    med_mrr_str = (
+        f"{summary.medium_mrr:.4f}" if summary.medium_mrr is not None else "N/A"
+    )
+    hard_acc = (
+        f"{summary.hard_top1_accuracy:.1f}%"
+        if summary.hard_top1_accuracy is not None
+        else "N/A"
+    )
+    hard_mrr_str = f"{summary.hard_mrr:.4f}" if summary.hard_mrr is not None else "N/A"
+
     lines = [
         "# RootCause AI Benchmark Report (Structured Causal Evaluator v2)",
         "",
@@ -53,10 +74,30 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
         f"| Avg Analytical Tool Calls | {summary.avg_tool_calls:.1f} |",
         f"| Avg Execution Time | {summary.avg_execution_time_ms:.1f} ms |",
         "",
+        "## Difficulty Stratification",
+        "",
+        "| Tier | Scenarios | Top-1 Accuracy | MRR |",
+        "|---|---:|---:|---:|",
+        (
+            f"| **Easy** (Clear Single Driver) | {summary.easy_count}"
+            f" | {easy_acc} | {easy_mrr_str} |"
+        ),
+        (
+            f"| **Medium** (Multi-Factor Drivers) | {summary.medium_count}"
+            f" | {med_acc} | {med_mrr_str} |"
+        ),
+        (
+            f"| **Hard** (Competing / Distractors / Noise) | {summary.hard_count}"
+            f" | {hard_acc} | {hard_mrr_str} |"
+        ),
+        "",
         "## Scenario Results",
         "",
-        "| Scenario | Ground Truth | Top-1 | Top-3 | MRR | Error | Grounded |",
-        "|---|---|:---:|:---:|:---:|:---:|:---:|",
+        (
+            "| Scenario | Difficulty | Ground Truth"
+            " | Top-1 | Top-3 | MRR | Error | Grounded |"
+        ),
+        "|---|:---:|---|:---:|:---:|:---:|:---:|:---:|",
     ]
 
     for r in summary.results:
@@ -69,7 +110,7 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
             else "N/A"
         )
         row = (
-            f"| **{r.scenario_id}** | `{r.ground_truth_primary}` | "
+            f"| **{r.scenario_id}** | `{r.difficulty}` | `{r.ground_truth_primary}` | "
             f"{top1_sym} | {top3_sym} | {r.reciprocal_rank:.3f} | "
             f"{err_str} | {ground_sym} |"
         )
@@ -96,7 +137,7 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
     lines.extend(
         [
             "",
-            "## Failure Analysis",
+            "## Failure & Ambiguity Analysis",
             "",
         ]
     )
@@ -122,6 +163,7 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
                 [
                     f"### Scenario {f.scenario_id}: {f.scenario_name}",
                     "",
+                    f"- **Difficulty**: `{f.difficulty}`",
                     f"- **Expected Cause**: `{f.ground_truth_primary}`",
                     f"- **Predicted Causes**: {causes_str}",
                     f"- **MRR Score**: {f.reciprocal_rank:.4f}",
@@ -167,13 +209,25 @@ def run_scenario(scenario: GroundTruthScenario, conn: Any = None) -> EvaluationR
 
 def run_benchmark(
     scenario_id: str | None = None,
+    difficulty: str | None = None,
+    limit: int | None = None,
     output_json: str | None = None,
     output_md: str | None = None,
     verbose: bool = False,
     conn: Any = None,
 ) -> BenchmarkSummary:
     """Run the complete benchmark suite or a selected scenario."""
-    scenarios = [get_scenario(scenario_id)] if scenario_id else get_all_scenarios()
+    if scenario_id:
+        scenarios = [get_scenario(scenario_id)]
+    else:
+        scenarios = get_all_scenarios()
+        if difficulty and difficulty.lower() in {"easy", "medium", "hard"}:
+            scenarios = [
+                s for s in scenarios if s.difficulty.lower() == difficulty.lower()
+            ]
+        if limit and limit > 0:
+            scenarios = scenarios[:limit]
+
     results: list[EvaluationResult] = []
 
     print("\n========================================================")
@@ -183,7 +237,8 @@ def run_benchmark(
 
     for idx, scn in enumerate(scenarios, 1):
         print(
-            f"[{idx}/{len(scenarios)}] Running {scn.scenario_id}: {scn.name}...",
+            f"[{idx}/{len(scenarios)}] Running"
+            f" {scn.scenario_id} ({scn.difficulty}): {scn.name}...",
             end="",
             flush=True,
         )
@@ -219,6 +274,7 @@ def run_benchmark(
                     top1_correct=False,
                     top3_correct=False,
                     reciprocal_rank=0.0,
+                    difficulty=scn.difficulty,
                     failure_explanation=f"Execution error: {e}",
                 )
             )
@@ -227,14 +283,29 @@ def run_benchmark(
 
     # Print Console Summary
     print("\n========================================================")
-    print(" Benchmark Summary")
+    print(" RootCause AI Benchmark Summary")
     print("========================================================")
+    print(f" Total Scenarios:         {summary.scenarios_evaluated}")
     print(f" Top-1 Accuracy:          {summary.top1_accuracy:.1f}%")
     print(f" Top-3 Accuracy:          {summary.top3_accuracy:.1f}%")
     print(f" Mean Reciprocal Rank:    {summary.mrr:.4f}")
     print(f" Evidence Grounding Rate: {summary.evidence_grounding_rate:.1f}%")
     print(f" Hallucination Rate:      {summary.hallucination_rate:.3f} (Zero Target)")
     print(f" Avg Latency:             {summary.avg_execution_time_ms:.1f} ms")
+    print("--------------------------------------------------------")
+    print(" Performance by Difficulty Tier:")
+    if summary.easy_count > 0 and summary.easy_top1_accuracy is not None:
+        print(
+            f"   Easy   ({summary.easy_count:2d} scenarios): Top-1 = {summary.easy_top1_accuracy:5.1f}% | MRR = {summary.easy_mrr:.4f}"
+        )
+    if summary.medium_count > 0 and summary.medium_top1_accuracy is not None:
+        print(
+            f"   Medium ({summary.medium_count:2d} scenarios): Top-1 = {summary.medium_top1_accuracy:5.1f}% | MRR = {summary.medium_mrr:.4f}"
+        )
+    if summary.hard_count > 0 and summary.hard_top1_accuracy is not None:
+        print(
+            f"   Hard   ({summary.hard_count:2d} scenarios): Top-1 = {summary.hard_top1_accuracy:5.1f}% | MRR = {summary.hard_mrr:.4f}"
+        )
     print("========================================================\n")
 
     # Generate Reports
@@ -268,6 +339,19 @@ def main() -> None:
         help="Run a specific scenario ID (e.g. SCN-001)",
     )
     parser.add_argument(
+        "--difficulty",
+        type=str,
+        default=None,
+        choices=["easy", "medium", "hard", "all"],
+        help="Filter scenarios by difficulty tier",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Limit number of scenarios to evaluate",
+    )
+    parser.add_argument(
         "--output-json", type=str, default=None, help="Path for JSON report"
     )
     parser.add_argument(
@@ -280,6 +364,8 @@ def main() -> None:
 
     run_benchmark(
         scenario_id=args.scenario,
+        difficulty=args.difficulty if args.difficulty != "all" else None,
+        limit=args.limit,
         output_json=args.output_json,
         output_md=args.output_md,
         verbose=args.verbose,

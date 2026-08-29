@@ -290,6 +290,8 @@ def evaluate_scenario_response(
         branches_pruned=branches_pruned,
         execution_time_ms=round(execution_time_ms, 2),
         stopping_reason=response.termination_reason,
+        difficulty=scenario.difficulty,
+        distractor_causes=scenario.distractor_causes,
         failure_explanation=failure_explanation,
     )
 
@@ -310,6 +312,15 @@ def aggregate_benchmark_results(results: list[EvaluationResult]) -> BenchmarkSum
             avg_steps=0.0,
             avg_tool_calls=0.0,
             avg_execution_time_ms=0.0,
+            easy_count=0,
+            easy_top1_accuracy=None,
+            easy_mrr=None,
+            medium_count=0,
+            medium_top1_accuracy=None,
+            medium_mrr=None,
+            hard_count=0,
+            hard_top1_accuracy=None,
+            hard_mrr=None,
             results=[],
         )
 
@@ -334,6 +345,49 @@ def aggregate_benchmark_results(results: list[EvaluationResult]) -> BenchmarkSum
     total_tools = sum(r.tool_calls for r in results)
     total_time = sum(r.execution_time_ms for r in results)
 
+    # Difficulty Stratification
+    easy_results = [r for r in results if r.difficulty == "easy"]
+    medium_results = [r for r in results if r.difficulty == "medium"]
+    hard_results = [r for r in results if r.difficulty == "hard"]
+
+    easy_count = len(easy_results)
+    easy_top1 = (
+        round((sum(1 for r in easy_results if r.top1_correct) / easy_count) * 100.0, 2)
+        if easy_count > 0
+        else None
+    )
+    easy_mrr = (
+        round(sum(r.reciprocal_rank for r in easy_results) / easy_count, 4)
+        if easy_count > 0
+        else None
+    )
+
+    medium_count = len(medium_results)
+    medium_top1 = (
+        round(
+            (sum(1 for r in medium_results if r.top1_correct) / medium_count) * 100.0, 2
+        )
+        if medium_count > 0
+        else None
+    )
+    medium_mrr = (
+        round(sum(r.reciprocal_rank for r in medium_results) / medium_count, 4)
+        if medium_count > 0
+        else None
+    )
+
+    hard_count = len(hard_results)
+    hard_top1 = (
+        round((sum(1 for r in hard_results if r.top1_correct) / hard_count) * 100.0, 2)
+        if hard_count > 0
+        else None
+    )
+    hard_mrr = (
+        round(sum(r.reciprocal_rank for r in hard_results) / hard_count, 4)
+        if hard_count > 0
+        else None
+    )
+
     return BenchmarkSummary(
         scenarios_evaluated=n,
         top1_accuracy=round((top1_count / n) * 100.0, 2),
@@ -349,5 +403,14 @@ def aggregate_benchmark_results(results: list[EvaluationResult]) -> BenchmarkSum
         avg_steps=round(total_steps / n, 2),
         avg_tool_calls=round(total_tools / n, 2),
         avg_execution_time_ms=round(total_time / n, 2),
+        easy_count=easy_count,
+        easy_top1_accuracy=easy_top1,
+        easy_mrr=easy_mrr,
+        medium_count=medium_count,
+        medium_top1_accuracy=medium_top1,
+        medium_mrr=medium_mrr,
+        hard_count=hard_count,
+        hard_top1_accuracy=hard_top1,
+        hard_mrr=hard_mrr,
         results=results,
     )

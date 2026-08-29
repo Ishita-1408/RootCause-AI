@@ -191,3 +191,28 @@ def test_run_benchmark_mocked_execution(
     with open(json_out, encoding="utf-8") as f:
         data = json.load(f)
         assert data["scenarios_evaluated"] == 1
+
+
+@patch("evaluation.runners.run_benchmark.AutonomousInvestigationAgent")
+def test_run_benchmark_difficulty_filter(
+    mock_agent_class: MagicMock,
+    mock_agent_response: InvestigationAgentResponse,
+    tmp_path: Path,
+) -> None:
+    """Test benchmark runner difficulty filtering and limit options."""
+    mock_agent_instance = MagicMock()
+    mock_agent_instance.run_investigation.return_value = mock_agent_response
+    mock_agent_class.return_value = mock_agent_instance
+
+    mock_conn = MagicMock()
+    summary = run_benchmark(
+        difficulty="easy",
+        limit=3,
+        output_json=str(tmp_path / "filter.json"),
+        output_md=str(tmp_path / "filter.md"),
+        conn=mock_conn,
+    )
+
+    assert summary.scenarios_evaluated == 3
+    for r in summary.results:
+        assert r.difficulty == "easy"

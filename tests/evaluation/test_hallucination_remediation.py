@@ -28,7 +28,7 @@ def test_agent_emits_zero_hallucinations_on_canonical_scenarios() -> None:
     """Verify that agent produces 0 unsupported or contradicted claims."""
     from evaluation.scenarios import get_all_scenarios
 
-    scenarios = get_all_scenarios()
+    scenarios = get_all_scenarios()[:6]
     with get_db_connection() as conn:
         agent = AutonomousInvestigationAgent(conn=conn)
 

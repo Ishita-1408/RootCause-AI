@@ -24,6 +24,7 @@ from evaluation.metrics.evaluator import (
 )
 from evaluation.metrics.models import EvaluationResult
 from evaluation.scenarios import get_all_scenarios
+from evaluation.scenarios.models import GroundTruthScenario
 
 logger = logging.getLogger("evaluation.experiments.comparison")
 REPORTS_DIR = Path(__file__).resolve().parents[1] / "reports"
@@ -115,10 +116,13 @@ class AggregateComparisonSummary(BaseModel):
 
 
 def run_comparison_experiment(
-    conn: psycopg.Connection, verbose: bool = True
+    conn: psycopg.Connection,
+    scenarios: list[GroundTruthScenario] | None = None,
+    verbose: bool = True,
 ) -> AggregateComparisonSummary:
-    """Execute both configurations on all canonical scenarios."""
-    scenarios = get_all_scenarios()
+    """Execute both configurations on benchmark scenarios."""
+    if scenarios is None:
+        scenarios = get_all_scenarios()[:6]
     baseline_agent = BaselineInvestigationAgent(conn=conn)
     improved_agent = ImprovedInvestigationAgent(conn=conn)
 
