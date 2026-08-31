@@ -47,24 +47,56 @@ class AutonomousInvestigationAgent:
             conn=self.conn, request=request, state=state
         )
 
-        # 3. Rank Root Causes Transparently & Separate Cause from Segment
+        # 3. Compute Change-Point Analysis (Phase J)
+        from datetime import timedelta
+
+        from apps.analytics.change_detection import run_change_point_detection
+
+        cp_analysis = None
+        try:
+            with self.conn.transaction():
+                start_d = request.anomaly_date - timedelta(days=14)
+                end_d = request.anomaly_date
+                cp_resp = run_change_point_detection(
+                    conn=self.conn,
+                    metric=request.metric,
+                    start_date=start_d,
+                    end_date=end_d,
+                    minimum_segment_size=3,
+                )
+                cp_analysis = cp_resp.change_point
+        except Exception:
+            cp_analysis = None
+
+        # 4. Synthesize Statistical Confidence & Significance Evidence (Phase K)
+        stat_evidence = build_statistical_evidence_summary(
+            summary=rc_resp.summary,
+            decomposition=rc_resp.decomposition,
+            operational_signals=rc_resp.operational_indicators,
+            contributors=rc_resp.ranked_contributors,
+            cp_analysis=cp_analysis,
+        )
+
+        # 5. Rank Root Causes Transparently & Separate Cause from Segment (Multi-Signal)
         top_causes = rank_evidence(
             contributors=rc_resp.ranked_contributors,
             decomposition=rc_resp.decomposition,
             summary=rc_resp.summary,
             operational_signals=rc_resp.operational_indicators,
             max_causes=5,
+            stat_evidence=stat_evidence,
+            cp_analysis=cp_analysis,
         )
         state.top_root_causes = top_causes
 
-        # 4. Check Termination Policy
+        # 6. Check Termination Policy
         is_term, term_reason = should_terminate(state)
         state.is_terminated = is_term
         state.termination_reason = (
             term_reason or "Investigation completed: All scheduled branches evaluated."
         )
 
-        # 5. Synthesize Executive Narrative via Phase 5C AI Layer
+        # 7. Synthesize Executive Narrative via Phase 5C AI Layer
         try:
             ai_memo = investigate_with_ai(root_cause_response=rc_resp)
             exec_summary = ai_memo.executive_summary
@@ -86,36 +118,6 @@ class AutonomousInvestigationAgent:
             status_literal = "max_steps_reached"
         else:
             status_literal = "completed"
-
-        # 6. Compute Change-Point Analysis (Phase J)
-        from datetime import timedelta
-
-        from apps.analytics.change_detection import run_change_point_detection
-
-        cp_analysis = None
-        try:
-            with self.conn.transaction():
-                start_d = request.anomaly_date - timedelta(days=14)
-                end_d = request.anomaly_date
-                cp_resp = run_change_point_detection(
-                    conn=self.conn,
-                    metric=request.metric,
-                    start_date=start_d,
-                    end_date=end_d,
-                    minimum_segment_size=3,
-                )
-                cp_analysis = cp_resp.change_point
-        except Exception:
-            cp_analysis = None
-
-        # 7. Synthesize Statistical Confidence & Significance Evidence (Phase K)
-        stat_evidence = build_statistical_evidence_summary(
-            summary=rc_resp.summary,
-            decomposition=rc_resp.decomposition,
-            operational_signals=rc_resp.operational_indicators,
-            contributors=rc_resp.ranked_contributors,
-            cp_analysis=cp_analysis,
-        )
 
         # 8. Generate Deterministic Evidence-Backed Claims (Phase H & K)
         candidate_claims = generate_evidence_backed_claims(

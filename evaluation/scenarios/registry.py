@@ -1,9 +1,12 @@
 """Canonical Benchmark Scenarios Registry for RootCause AI.
 
-Comprehensive Benchmark Suite: 115 Scenarios across 2016–2018 Olist Dataset.
+Comprehensive Benchmark Suite: 115 Scenarios across 2016-2018 Olist Dataset.
 Stratified by Difficulty: Easy, Medium, Hard.
-Covering Metrics: total_gmv, orders_count, average_order_value, late_delivery_rate_pct, avg_review_score.
+Covering Metrics: total_gmv, orders_count, average_order_value,
+late_delivery_rate_pct, avg_review_score.
 """
+
+# ruff: noqa: E501  -- description strings in data registries may legitimately exceed 88 chars
 
 from datetime import date
 
@@ -2177,100 +2180,13 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ],
         tags=["seller", "quality"],
     ),
-    # ─────────────────────────── EASY (SCN-053 to SCN-067) ───────────────────────────
+    # --- EASY (SCN-053 to SCN-067) ---
     GroundTruthScenario(
         scenario_id="SCN-053",
         name="Mid-Year Flash Sale Volume Surge",
         description=(
-            "Multi-dimensional business investigation on 2017-05-02 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 5, 2),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-054",
-        name="Incident Diagnostic Investigation SCN-054: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-05-18 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 5, 18),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-055",
-        name="Incident Diagnostic Investigation SCN-055: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2017-06-01 evaluating observed shift in orders_count against historical baseline."
+            "A weekend flash sale event drives a single-day order volume spike across broad "
+            "categories, with transaction count more than doubling against the prior-week baseline."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_surge",
@@ -2280,11 +2196,60 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=82.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="sp_acquisition_hub",
+                dimension="customer_state",
+                dimension_value="SP",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=38.0,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "product_category=cama_mesa_banho",
+            "customer_state=RJ",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 7, 1),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 70.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["flash_sale", "volume", "promotional"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-054",
+        name="September Post-Holiday Volume Contraction",
+        description=(
+            "Following an extended late-August promotional period, September sees a sharp volume "
+            "hangover as purchase appetite is exhausted and order rates fall below the prior-week "
+            "level."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=79.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_volume_softening",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -2295,26 +2260,79 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
+            "average_order_value_contraction",
+            "product_category=beleza_saude",
+            "late_delivery_rate_increase",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 9, 30),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 65.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["seasonal", "hangover", "volume_contraction"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-055",
+        name="December Holiday Order Volume Expansion",
+        description=(
+            "Early December holiday shopping creates a sharp uplift in daily order count across "
+            "consumer goods categories, with Brazil's core retail states leading the demand surge."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=83.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_holiday_hub",
+                dimension="customer_state",
+                dimension_value="SP",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=42.0,
+            )
+        ],
+        distractor_causes=[
             "average_order_value_expansion",
+            "product_category=brinquedos",
+            "customer_state=RJ",
         ],
         difficulty="easy",
         is_insufficient_evidence=False,
         target_metric="orders_count",
-        anomaly_date=date(2017, 6, 1),
+        anomaly_date=date(2017, 12, 20),
         comparison_days=7,
         expected_direction="increase",
         severity="warning",
         affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "observed_orders > baseline_orders",
+            "volume_contribution_pct > 75.0",
+        ],
+        tags=["holiday", "seasonal", "december"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-056",
-        name="Incident Diagnostic Investigation SCN-056: Orders Count",
+        name="Post-New Year January Demand Drop",
         description=(
-            "Multi-dimensional business investigation on 2017-06-15 evaluating observed shift in orders_count against historical baseline."
+            "Consumer spending fatigue and budget recovery after the holiday season create a "
+            "sustained post-new-year demand trough, with order volumes dropping sharply in "
+            "the third week of January."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_drop",
@@ -2323,42 +2341,47 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_category="macro_driver",
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=52.0,
+            affected_value="SP",
+            expected_contribution_pct=77.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="sp_january_slowdown",
                 dimension="customer_state",
-                dimension_value="MG",
+                dimension_value="SP",
                 causal_category="segment_concentration",
                 causal_mechanism=None,
                 affected_dimension="customer_state",
-                affected_value="MG",
+                affected_value="SP",
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=MG",
-            "order_volume_drop",
             "average_order_value_contraction",
+            "late_delivery_rate_increase",
+            "product_category=cama_mesa_banho",
         ],
-        difficulty="hard",
-        is_insufficient_evidence=True,
+        difficulty="easy",
+        is_insufficient_evidence=False,
         target_metric="orders_count",
-        anomaly_date=date(2017, 6, 15),
+        anomaly_date=date(2017, 1, 20),
         comparison_days=7,
         expected_direction="decrease",
         severity="warning",
         affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "hard", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "observed_orders < baseline_orders",
+            "volume_contribution_pct > 65.0",
+        ],
+        tags=["seasonal", "january", "demand_trough"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-057",
-        name="Incident Diagnostic Investigation SCN-057: Average Order Value",
+        name="Luxury Watch Gifting Basket Surge",
         description=(
-            "Multi-dimensional business investigation on 2017-07-02 evaluating observed shift in average_order_value against historical baseline."
+            "A targeted promotional campaign on luxury watches and premium gifts drives a "
+            "significant expansion in average basket value, with the relogios_presentes category "
+            "generating outsized ticket sizes relative to the baseline period."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="average_order_value_expansion",
@@ -2367,12 +2390,61 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_category="macro_driver",
             causal_mechanism="average_order_value",
             affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
+            affected_value="relogios_presentes",
+            expected_contribution_pct=72.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="luxury_category_mix_shift",
+                dimension="product_category",
+                dimension_value="relogios_presentes",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="relogios_presentes",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_surge",
+            "customer_state=SP",
+            "product_category=eletrodomesticos",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="average_order_value",
+        anomaly_date=date(2017, 5, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 60.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["luxury", "gifting", "basket_expansion"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-058",
+        name="Electronics Price War AOV Collapse",
+        description=(
+            "Competitive price slashing in the computer accessories and consumer electronics "
+            "segment drives average ticket sizes sharply lower as buyers shift toward discounted "
+            "commodity items."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_contraction",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="informatica_acessorios",
+            expected_contribution_pct=68.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="tech_category_discount_mix",
                 dimension="product_category",
                 dimension_value="informatica_acessorios",
                 causal_category="segment_concentration",
@@ -2383,40 +2455,140 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "order_volume_drop",
+            "customer_state=SP",
+            "product_category=beleza_saude",
         ],
         difficulty="easy",
         is_insufficient_evidence=False,
         target_metric="average_order_value",
-        anomaly_date=date(2017, 7, 2),
-        comparison_days=14,
-        expected_direction="increase",
+        anomaly_date=date(2017, 8, 10),
+        comparison_days=7,
+        expected_direction="decrease",
         severity="warning",
         affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 55.0",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["electronics", "price_war", "basket_contraction"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-058",
-        name="Incident Diagnostic Investigation SCN-058: Average Order Value",
+        scenario_id="SCN-059",
+        name="Northeast Regional Logistics Bottleneck",
         description=(
-            "Multi-dimensional business investigation on 2017-07-22 evaluating observed shift in average_order_value against historical baseline."
+            "Severe port congestion and freight capacity constraints in Brazil's northeast create "
+            "a regional delivery delay spike concentrated in BA, CE, and PE states."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=62.0,
+            cause_id="logistics_fulfillment_bottleneck",
+            dimension="delivery",
+            dimension_value="late_delivery",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="BA",
+            expected_contribution_pct=None,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="northeast_regional_concentration",
+                dimension="customer_state",
+                dimension_value="BA",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="BA",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "customer_state=SP",
+            "order_volume_surge",
+            "product_category=moveis_decoracao",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 6, 10),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
+        ],
+        tags=["logistics", "northeast", "regional_bottleneck"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-060",
+        name="Southern State Carrier Recovery",
+        description=(
+            "Following a prior-month freight disruption, logistics carriers in Brazil's south "
+            "restore normal transit SLAs, driving a significant drop in the late delivery rate."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="RS",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="rs_sc_pr_recovery",
+                dimension="customer_state",
+                dimension_value="RS",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="RS",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_drop",
+            "customer_state=SP",
+            "product_category=construcao_ferramentas_seguranca",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 4, 1),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate < baseline_late_delivery_rate"
+        ],
+        tags=["logistics", "south", "carrier_recovery"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-061",
+        name="Product Damage Complaint Surge",
+        description=(
+            "A batch of items dispatched with inadequate protective packaging results in high "
+            "damage-in-transit rates, triggering a wave of 1-star and 2-star reviews concentrated "
+            "in household goods."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
+            dimension_value=None,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="product_category",
+            affected_value="utilidades_domesticas",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="domestic_goods_damage_cluster",
                 dimension="product_category",
                 dimension_value="utilidades_domesticas",
                 causal_category="segment_concentration",
@@ -2426,71 +2598,27 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
                 expected_contribution_pct=None,
             )
         ],
-        distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
+        distractor_causes=["delivery", "customer_state=SP", "order_volume_surge"],
+        difficulty="easy",
         is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 7, 22),
+        target_metric="avg_review_score",
+        anomaly_date=date(2017, 5, 20),
         comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "medium", "synthetic_expansion"],
+        affected_dimensions=["avg_review_score", "product_category"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score"
+        ],
+        tags=["quality", "damage", "complaints"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-059",
-        name="Incident Diagnostic Investigation SCN-059: Late Delivery Rate Pct",
+        scenario_id="SCN-062",
+        name="Customer Service Improvement Sentiment Lift",
         description=(
-            "Multi-dimensional business investigation on 2017-08-08 evaluating observed shift in late_delivery_rate_pct against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2017, 8, 8),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="critical",
-        affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-060",
-        name="Incident Diagnostic Investigation SCN-060: Avg Review Score",
-        description=(
-            "Multi-dimensional business investigation on 2017-08-22 evaluating observed shift in avg_review_score against historical baseline."
+            "Following a platform-wide customer support initiative with faster response times "
+            "and proactive order tracking, buyer satisfaction scores improve markedly over "
+            "the comparison week."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="customer_satisfaction_decline",
@@ -2504,37 +2632,41 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="delivery_improvement_driver",
                 dimension="delivery",
                 dimension_value="late_delivery",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=late_delivery",
             "order_volume_drop",
-            "average_order_value_contraction",
+            "product_category=cama_mesa_banho",
+            "average_order_value_expansion",
         ],
-        difficulty="hard",
+        difficulty="easy",
         is_insufficient_evidence=False,
         target_metric="avg_review_score",
-        anomaly_date=date(2017, 8, 22),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="warning",
+        anomaly_date=date(2017, 3, 10),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="normal",
         affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "hard", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "observed_avg_review_score > baseline_avg_review_score"
+        ],
+        tags=["sentiment", "improvement", "customer_service"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-061",
-        name="Incident Diagnostic Investigation SCN-061: Total Gmv",
+        scenario_id="SCN-063",
+        name="Furniture Category Volume Expansion",
         description=(
-            "Multi-dimensional business investigation on 2017-09-05 evaluating observed shift in total_gmv against historical baseline."
+            "A targeted home improvement campaign drives significant unit volume growth in the "
+            "furniture and decor category, lifting total GMV predominantly through order count "
+            "expansion."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_surge",
@@ -2542,13 +2674,159 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             dimension_value=None,
             causal_category="macro_driver",
             causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
+            affected_dimension="product_category",
+            affected_value="moveis_decoracao",
+            expected_contribution_pct=76.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="furniture_category_uplift",
+                dimension="product_category",
+                dimension_value="moveis_decoracao",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="moveis_decoracao",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=SP",
+            "product_category=cama_mesa_banho",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 11, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 65.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["furniture", "home_improvement", "category_expansion"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-064",
+        name="Post-Valentine Gift Order Drop",
+        description=(
+            "Following Brazil's June Dia dos Namorados gift-buying peak, the following week "
+            "sees a sharp demand hangover as purchase intent normalizes."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="product_category",
+            affected_value="relogios_presentes",
+            expected_contribution_pct=75.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="gifting_category_hangover",
+                dimension="product_category",
+                dimension_value="relogios_presentes",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="relogios_presentes",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_contraction",
+            "customer_state=SP",
+            "product_category=beleza_saude",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="orders_count",
+        anomaly_date=date(2017, 6, 20),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "observed_orders < baseline_orders",
+            "volume_contribution_pct > 60.0",
+        ],
+        tags=["seasonal", "valentines", "gifting_hangover"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-065",
+        name="Electronics Super-Sale AOV Spike",
+        description=(
+            "A major electronics promotion combining bundle deals and instalment financing "
+            "drives a sharp increase in average ticket value, with high-end devices lifting "
+            "the basket."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_expansion",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="eletrodomesticos",
+            expected_contribution_pct=70.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="appliance_bundle_mix",
+                dimension="product_category",
+                dimension_value="eletrodomesticos",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="eletrodomesticos",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_surge",
+            "customer_state=SP",
+            "product_category=informatica_acessorios",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 3, 25),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 55.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["electronics", "promotion", "basket_expansion"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-066",
+        name="Carnival Week Order Freeze",
+        description=(
+            "Brazil's Carnival holiday week causes a nationwide commercial pause: logistics are "
+            "disrupted, discretionary spending halts, and order volume collapses across all "
+            "categories and states."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=85.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_carnival_freeze",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -2559,612 +2837,442 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=cama_mesa_banho",
         ],
         difficulty="easy",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
+        anomaly_date=date(2017, 2, 27),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="critical",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 75.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["seasonal", "carnival", "holiday_freeze"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-067",
+        name="Mother's Day Category Gift Surge",
+        description=(
+            "Brazil's Dia das Maes in May triggers a concentrated gift-buying surge in beauty, "
+            "perfume, and household accessories, lifting GMV almost entirely through volume "
+            "expansion."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="product_category",
+            affected_value="beleza_saude",
+            expected_contribution_pct=78.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="beauty_mothers_day_spike",
+                dimension="product_category",
+                dimension_value="beleza_saude",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="beleza_saude",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=RJ",
+            "product_category=relogios_presentes",
+        ],
+        difficulty="easy",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 5, 13),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 65.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["seasonal", "mothers_day", "category_surge"],
+    ),
+    # --- MEDIUM (SCN-068 to SCN-095) ---
+    GroundTruthScenario(
+        scenario_id="SCN-068",
+        name="Black Friday Volume and AOV Combined Effect",
+        description=(
+            "Brazil's Black Friday generates a simultaneous volume surge and basket expansion: "
+            "promotional bundles lift AOV while acquisition campaigns multiply order count. "
+            "Both mechanisms contribute meaningfully, making isolated attribution non-trivial."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=62.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="average_order_value_expansion",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=38.0,
+            )
+        ],
+        distractor_causes=[
+            "product_category=cama_mesa_banho",
+            "customer_state=RJ",
+            "carrier_sla_degradation",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 11, 25),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="critical",
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "aov_contribution_pct > 25.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["black_friday", "multi_driver", "promotional"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-069",
+        name="Q3 Revenue Softening Mixed AOV and Volume Signal",
+        description=(
+            "A mid-August revenue decline shows both average basket contraction and a moderate "
+            "volume reduction. The AOV signal is marginally stronger but both mechanisms are "
+            "active, requiring careful decomposition to identify the primary driver."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_contraction",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="cama_mesa_banho",
+            expected_contribution_pct=55.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="order_volume_softening",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=45.0,
+            )
+        ],
+        distractor_causes=[
+            "carrier_sla_degradation",
+            "customer_state=SP",
+            "product_category=beleza_saude",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 8, 20),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["average_order_value", "order_volume", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 40.0",
+            "observed_aov < baseline_aov",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["competing_drivers", "q3", "revenue_softening"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-070",
+        name="Late Delivery Cascade into Review Score Decline",
+        description=(
+            "A logistics disruption causing delivery SLA breaches in Sao Paulo during January "
+            "produces a lagged cascade into customer satisfaction scores, as buyers submit reviews "
+            "for late-arriving holiday orders. The review decline requires connecting delivery "
+            "signals to the review dimension."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
+            dimension_value=None,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="delivery",
+            affected_value="late_delivery",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="delivery_friction_cascade",
+                dimension="delivery",
+                dimension_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "product_category=cama_mesa_banho",
+            "order_volume_surge",
+            "customer_state=SP",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="avg_review_score",
+        anomaly_date=date(2018, 1, 20),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["avg_review_score", "delivery"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score",
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+        ],
+        tags=["causal_chain", "delivery_cascade", "sentiment"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-071",
+        name="Electronics Promo Volume Surge with Category Mix Shift",
+        description=(
+            "An October consumer electronics promotion produces a clear volume uplift primarily "
+            "through informatica_acessorios and telephonia categories, with a secondary basket "
+            "compression from budget accessories dominating the category mix."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="product_category",
+            affected_value="informatica_acessorios",
+            expected_contribution_pct=65.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="tech_category_concentration",
+                dimension="product_category",
+                dimension_value="informatica_acessorios",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="informatica_acessorios",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=SP",
+            "product_category=eletrodomesticos",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 10, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["electronics", "category_mix", "promotional"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-072",
+        name="Regional Delivery Delay with Multi-State Exposure",
+        description=(
+            "A routing software failure at a major distribution hub creates delivery delays that "
+            "disproportionately affect MG and RJ states, raising the national late delivery rate "
+            "through concentrated multi-state SLA breaches."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="logistics_fulfillment_bottleneck",
+            dimension="delivery",
+            dimension_value="late_delivery",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="MG",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="rj_mg_hub_impact",
+                dimension="customer_state",
+                dimension_value="RJ",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="RJ",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "customer_state=SP",
+            "order_volume_surge",
+            "product_category=moveis_decoracao",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
         anomaly_date=date(2017, 9, 5),
         comparison_days=7,
         expected_direction="increase",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-062",
-        name="Incident Diagnostic Investigation SCN-062: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-09-25 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="beleza_saude",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="beleza_saude",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=beleza_saude",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 9, 25),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-063",
-        name="Incident Diagnostic Investigation SCN-063: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-10-10 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 10, 10),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-064",
-        name="Incident Diagnostic Investigation SCN-064: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-10-25 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 10, 25),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-065",
-        name="Incident Diagnostic Investigation SCN-065: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2017-11-05 evaluating observed shift in orders_count against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 11, 5),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-066",
-        name="Incident Diagnostic Investigation SCN-066: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2017-11-15 evaluating observed shift in orders_count against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="MG",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="MG",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=MG",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 11, 15),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-067",
-        name="Incident Diagnostic Investigation SCN-067: Average Order Value",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-01 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="informatica_acessorios",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="informatica_acessorios",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 12, 1),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-068",
-        name="Incident Diagnostic Investigation SCN-068: Average Order Value",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-12 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="utilidades_domesticas",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="utilidades_domesticas",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 12, 12),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "hard", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-069",
-        name="Incident Diagnostic Investigation SCN-069: Late Delivery Rate Pct",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-22 evaluating observed shift in late_delivery_rate_pct against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2017, 12, 22),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="critical",
         affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-070",
-        name="Incident Diagnostic Investigation SCN-070: Avg Review Score",
-        description=(
-            "Multi-dimensional business investigation on 2018-01-05 evaluating observed shift in avg_review_score against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="customer_satisfaction_decline",
-            dimension="avg_review_score",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="avg_review_score",
-            affected_dimension="delivery",
-            affected_value="late_delivery",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="delivery",
-                dimension_value="late_delivery",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
-                expected_contribution_pct=None,
-            )
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
         ],
-        distractor_causes=[
-            "customer_state=late_delivery",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="avg_review_score",
-        anomaly_date=date(2018, 1, 5),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-071",
-        name="Incident Diagnostic Investigation SCN-071: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2018-01-18 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2018, 1, 18),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-072",
-        name="Incident Diagnostic Investigation SCN-072: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2018-02-02 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="beleza_saude",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="beleza_saude",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=beleza_saude",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="total_gmv",
-        anomaly_date=date(2018, 2, 2),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
+        tags=["logistics", "multi_state", "hub_failure"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-073",
-        name="Incident Diagnostic Investigation SCN-073: Total Gmv",
+        name="Beauty Category Volume and Basket Simultaneous Uplift",
         description=(
-            "Multi-dimensional business investigation on 2018-02-18 evaluating observed shift in total_gmv against historical baseline."
+            "A beleza_saude promotional period with bundled product sets drives concurrent order "
+            "volume and basket value growth, requiring examination of both decomposition axes to "
+            "confirm which mechanism dominates."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
+            cause_id="order_volume_surge",
             dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
             causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
+            affected_dimension="product_category",
+            affected_value="beleza_saude",
+            expected_contribution_pct=58.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
+                cause_id="beauty_bundle_aov_lift",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension="product_category",
+                affected_value="beleza_saude",
+                expected_contribution_pct=42.0,
             )
         ],
         distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "customer_state=SP",
+            "product_category=cama_mesa_banho",
+            "carrier_sla_degradation",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
-        anomaly_date=date(2018, 2, 18),
+        anomaly_date=date(2017, 4, 20),
         comparison_days=7,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 45.0",
+            "aov_contribution_pct > 30.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["beauty", "multi_driver", "promotional"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-074",
-        name="Incident Diagnostic Investigation SCN-074: Total Gmv",
+        name="Post-Black Friday Demand Hangover with Category Rotation",
         description=(
-            "Multi-dimensional business investigation on 2018-03-02 evaluating observed shift in total_gmv against historical baseline."
+            "The week following Black Friday 2017 shows a sharp volume contraction as purchase "
+            "appetite is exhausted, amplified by a category composition shift away from high-value "
+            "electronics toward lower-ticket items, compressing both volume and AOV simultaneously."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
+            cause_id="order_volume_drop",
+            dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=62.0,
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=65.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
+                cause_id="post_bfriday_aov_compression",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=35.0,
             )
         ],
         distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=cama_mesa_banho",
+            "customer_state=MG",
         ],
         difficulty="medium",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
-        anomaly_date=date(2018, 3, 2),
+        anomaly_date=date(2017, 12, 5),
         comparison_days=7,
         expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
+        severity="critical",
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["black_friday", "hangover", "multi_driver"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-075",
-        name="Incident Diagnostic Investigation SCN-075: Orders Count",
+        name="SP Hub Volume Concentration Shift Driving GMV Decline",
         description=(
-            "Multi-dimensional business investigation on 2018-03-18 evaluating observed shift in orders_count against historical baseline."
+            "A disproportionate volume contraction originating in Sao Paulo -- accounting for "
+            "over a third of total orders -- creates a revenue decline that requires distinguishing "
+            "whether it is a macro demand shift or an SP-specific platform issue."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
+            cause_id="order_volume_drop",
             dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=68.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="sp_concentration_amplifier",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -3175,172 +3283,192 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "average_order_value_contraction",
+            "customer_state=RJ",
+            "carrier_sla_degradation",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
         target_metric="orders_count",
-        anomaly_date=date(2018, 3, 18),
-        comparison_days=14,
-        expected_direction="increase",
+        anomaly_date=date(2017, 7, 15),
+        comparison_days=7,
+        expected_direction="decrease",
         severity="warning",
         affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["sp_concentration", "volume", "regional"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-076",
-        name="Incident Diagnostic Investigation SCN-076: Orders Count",
+        name="Category Mix Shift into High-Ticket Items",
         description=(
-            "Multi-dimensional business investigation on 2018-04-02 evaluating observed shift in orders_count against historical baseline."
+            "A November shift in consumer category preferences toward electronics and home "
+            "appliances drives a significant basket expansion, with average order value rising "
+            "while order count remains broadly stable -- requiring decomposition to isolate "
+            "AOV as the primary driver."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
+            cause_id="average_order_value_expansion",
+            dimension="average_order_value",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=52.0,
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="eletrodomesticos",
+            expected_contribution_pct=67.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="MG",
+                cause_id="appliance_category_mix_shift",
+                dimension="product_category",
+                dimension_value="eletrodomesticos",
                 causal_category="segment_concentration",
                 causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="MG",
+                affected_dimension="product_category",
+                affected_value="eletrodomesticos",
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=MG",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "order_volume_surge",
+            "customer_state=SP",
+            "product_category=informatica_acessorios",
         ],
-        difficulty="hard",
+        difficulty="medium",
         is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2018, 4, 2),
+        target_metric="average_order_value",
+        anomaly_date=date(2017, 11, 1),
         comparison_days=7,
-        expected_direction="decrease",
+        expected_direction="increase",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "hard", "synthetic_expansion"],
+        affected_dimensions=["average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 55.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["category_mix", "high_ticket", "basket_expansion"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-077",
-        name="Incident Diagnostic Investigation SCN-077: Average Order Value",
+        name="Delivery SLA Breach Suppressing New Order Volume",
         description=(
-            "Multi-dimensional business investigation on 2018-04-22 evaluating observed shift in average_order_value against historical baseline."
+            "Persistent delivery delays that are visible to prospective buyers through platform "
+            "reviews suppress new purchase intent, creating a secondary volume contraction "
+            "following the initial SLA degradation."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
+            cause_id="order_volume_drop",
+            dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=60.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="informatica_acessorios",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="informatica_acessorios",
+                cause_id="delivery_sla_demand_suppression",
+                dimension="delivery",
+                dimension_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "average_order_value_contraction",
+            "product_category=moveis_decoracao",
+            "customer_state=RJ",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2018, 4, 22),
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 8, 1),
         comparison_days=7,
-        expected_direction="increase",
+        expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
+        affected_dimensions=["order_volume", "delivery", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+        ],
+        tags=["delivery_demand_link", "causal_chain", "volume_suppression"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-078",
-        name="Incident Diagnostic Investigation SCN-078: Average Order Value",
+        name="Platform-Wide Review Score Drift from Multiple Sellers",
         description=(
-            "Multi-dimensional business investigation on 2018-05-05 evaluating observed shift in average_order_value against historical baseline."
+            "A broad quality deterioration across multiple large sellers -- shipping delays, "
+            "packaging issues, and mismatched product descriptions -- drives a platform-wide "
+            "review score decline not concentrated in a single category or region."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
             dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=62.0,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="seller",
+            affected_value="seller_dispatch",
+            expected_contribution_pct=None,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="utilidades_domesticas",
+                cause_id="multi_seller_quality_drop",
+                dimension="seller",
+                dimension_value=None,
                 causal_category="segment_concentration",
                 causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="utilidades_domesticas",
+                affected_dimension="seller",
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "delivery",
+            "product_category=cama_mesa_banho",
+            "customer_state=SP",
         ],
         difficulty="medium",
         is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2018, 5, 5),
-        comparison_days=14,
+        target_metric="avg_review_score",
+        anomaly_date=date(2018, 2, 10),
+        comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "medium", "synthetic_expansion"],
+        affected_dimensions=["avg_review_score", "seller"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score"
+        ],
+        tags=["seller_quality", "platform_wide", "multi_seller"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-079",
-        name="Incident Diagnostic Investigation SCN-079: Late Delivery Rate Pct",
+        name="Q1 2017 Seasonal Volume Ramp with Regional Concentration",
         description=(
-            "Multi-dimensional business investigation on 2018-05-20 evaluating observed shift in late_delivery_rate_pct against historical baseline."
+            "March 2017 sees a broad post-carnival volume recovery across the platform, but the "
+            "recovery is disproportionately concentrated in Sao Paulo. The challenge is "
+            "distinguishing whether this is a macro volume trend or an SP platform campaign."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
+            cause_id="order_volume_surge",
+            dimension="order_volume",
             dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=None,
+            expected_contribution_pct=63.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="sp_post_carnival_amplification",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -3351,26 +3479,32 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
             "average_order_value_expansion",
+            "product_category=beleza_saude",
+            "customer_state=RJ",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2018, 5, 20),
+        target_metric="orders_count",
+        anomaly_date=date(2017, 3, 15),
         comparison_days=7,
         expected_direction="increase",
-        severity="critical",
-        affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["seasonal", "q1", "sp_concentration"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-080",
-        name="Incident Diagnostic Investigation SCN-080: Avg Review Score",
+        name="Post-Christmas Late Delivery Review Penalty",
         description=(
-            "Multi-dimensional business investigation on 2018-06-05 evaluating observed shift in avg_review_score against historical baseline."
+            "Christmas delivery congestion causes a lagged review score decline as disappointed "
+            "buyers receive late gifts and submit negative reviews in the final week of December. "
+            "The review decline occurs simultaneously with a delivery SLA spike, requiring "
+            "cross-metric analysis."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="customer_satisfaction_decline",
@@ -3384,433 +3518,91 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="christmas_delivery_late_cascade",
                 dimension="delivery",
                 dimension_value="late_delivery",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=late_delivery",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "product_category=brinquedos",
+            "customer_state=SP",
+            "order_volume_surge",
         ],
-        difficulty="hard",
-        is_insufficient_evidence=True,
+        difficulty="medium",
+        is_insufficient_evidence=False,
         target_metric="avg_review_score",
-        anomaly_date=date(2018, 6, 5),
+        anomaly_date=date(2017, 12, 28),
         comparison_days=7,
         expected_direction="decrease",
-        severity="warning",
+        severity="critical",
         affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "hard", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score",
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+        ],
+        tags=["christmas", "delivery_cascade", "multi_metric"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-081",
-        name="Incident Diagnostic Investigation SCN-081: Total Gmv",
+        name="Furniture and Decor Basket Mix Uplift",
         description=(
-            "Multi-dimensional business investigation on 2018-06-20 evaluating observed shift in total_gmv against historical baseline."
+            "A home improvement campaign in October drives both average basket growth (larger "
+            "furniture items) and category volume expansion, requiring decomposition to confirm "
+            "whether AOV or volume is the primary GMV lever."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
+            cause_id="average_order_value_expansion",
+            dimension="average_order_value",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="moveis_decoracao",
+            expected_contribution_pct=57.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
+                cause_id="furniture_category_volume_uplift",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension="product_category",
+                affected_value="moveis_decoracao",
+                expected_contribution_pct=43.0,
             )
         ],
         distractor_causes=[
             "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "product_category=eletrodomesticos",
+            "carrier_sla_degradation",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
-        anomaly_date=date(2018, 6, 20),
-        comparison_days=14,
+        anomaly_date=date(2017, 10, 20),
+        comparison_days=7,
         expected_direction="increase",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
+        affected_dimensions=["average_order_value", "order_volume", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 45.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["furniture", "home_improvement", "multi_driver"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-082",
-        name="Incident Diagnostic Investigation SCN-082: Total Gmv",
+        name="Mid-Year Review Score Recovery via Delivery Improvement",
         description=(
-            "Multi-dimensional business investigation on 2018-07-02 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="beleza_saude",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="beleza_saude",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=beleza_saude",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2018, 7, 2),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-083",
-        name="Incident Diagnostic Investigation SCN-083: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2018-07-18 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2018, 7, 18),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-084",
-        name="Incident Diagnostic Investigation SCN-084: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2018-08-02 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2018, 8, 2),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-085",
-        name="Incident Diagnostic Investigation SCN-085: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2018-08-15 evaluating observed shift in orders_count against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2018, 8, 15),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-086",
-        name="Incident Diagnostic Investigation SCN-086: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2018-08-28 evaluating observed shift in orders_count against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="MG",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="MG",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=MG",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2018, 8, 28),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-087",
-        name="Incident Diagnostic Investigation SCN-087: Average Order Value",
-        description=(
-            "Multi-dimensional business investigation on 2016-10-04 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="informatica_acessorios",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="informatica_acessorios",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2016, 10, 4),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-088",
-        name="Incident Diagnostic Investigation SCN-088: Average Order Value",
-        description=(
-            "Multi-dimensional business investigation on 2016-10-08 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="utilidades_domesticas",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="utilidades_domesticas",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="average_order_value",
-        anomaly_date=date(2016, 10, 8),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "hard", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-089",
-        name="Incident Diagnostic Investigation SCN-089: Late Delivery Rate Pct",
-        description=(
-            "Multi-dimensional business investigation on 2017-01-15 evaluating observed shift in late_delivery_rate_pct against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2017, 1, 15),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="critical",
-        affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-090",
-        name="Incident Diagnostic Investigation SCN-090: Avg Review Score",
-        description=(
-            "Multi-dimensional business investigation on 2017-02-01 evaluating observed shift in avg_review_score against historical baseline."
+            "After a period of elevated late delivery rates, logistics improvements in June drive "
+            "a platform-wide recovery in customer satisfaction scores. The challenge: establishing "
+            "that the delivery improvement -- not just reduced volume -- is the causal mechanism."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="customer_satisfaction_decline",
@@ -3824,125 +3616,42 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="delivery_recovery_driver",
                 dimension="delivery",
                 dimension_value="late_delivery",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=late_delivery",
             "order_volume_drop",
-            "average_order_value_contraction",
+            "customer_state=SP",
+            "product_category=beleza_saude",
         ],
         difficulty="medium",
         is_insufficient_evidence=False,
         target_metric="avg_review_score",
-        anomaly_date=date(2017, 2, 1),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="warning",
+        anomaly_date=date(2017, 6, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="normal",
         affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "medium", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "observed_avg_review_score > baseline_avg_review_score",
+            "observed_late_delivery_rate < baseline_late_delivery_rate",
+        ],
+        tags=["sentiment", "recovery", "delivery_improvement"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-091",
-        name="Incident Diagnostic Investigation SCN-091: Total Gmv",
+        scenario_id="SCN-083",
+        name="RJ Revenue Drop Combining Volume and State Concentration",
         description=(
-            "Multi-dimensional business investigation on 2017-02-15 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 2, 15),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-092",
-        name="Incident Diagnostic Investigation SCN-092: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-03-01 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="beleza_saude",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="beleza_saude",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=beleza_saude",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="hard",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 3, 1),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-093",
-        name="Incident Diagnostic Investigation SCN-093: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-03-20 evaluating observed shift in total_gmv against historical baseline."
+            "Rio de Janeiro sees a concentrated volume decline coinciding with a local logistics "
+            "event, but the analysis must determine whether the RJ drop is a state-specific "
+            "operational issue or a broader volume contraction that manifests most visibly in RJ."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_drop",
@@ -3952,11 +3661,11 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="RJ",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=66.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="rj_market_contraction",
                 dimension="customer_state",
                 dimension_value="RJ",
                 causal_category="segment_concentration",
@@ -3967,53 +3676,9 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
             "average_order_value_contraction",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 3, 20),
-        comparison_days=14,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-094",
-        name="Incident Diagnostic Investigation SCN-094: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-04-05 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "customer_state=SP",
+            "carrier_sla_degradation",
         ],
         difficulty="medium",
         is_insufficient_evidence=False,
@@ -4022,59 +3687,607 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         comparison_days=7,
         expected_direction="decrease",
         severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["regional", "rj", "volume_contraction"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-084",
+        name="Northern Region Delivery Delay via Hub Disruption",
+        description=(
+            "A logistics hub disruption in Manaus causes delivery delays in AM and PA states "
+            "that cascade into the national late delivery metric. The multi-state nature requires "
+            "identifying the concentration dimension precisely."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="AM",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="northern_region_delay_hub",
+                dimension="customer_state",
+                dimension_value="AM",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="AM",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "customer_state=SP",
+            "order_volume_surge",
+            "product_category=ferramentas_jardim",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2018, 3, 20),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
+        ],
+        tags=["north_brazil", "logistics", "hub_disruption"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-085",
+        name="Sports Category Seasonal AOV Dip with Volume Stability",
+        description=(
+            "Post-summer clearance discounts in the esporte_lazer category compress average "
+            "ticket sizes while maintaining order count. Requires distinguishing AOV compression "
+            "from order volume changes to identify the correct mechanism."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_contraction",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="esporte_lazer",
+            expected_contribution_pct=63.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sports_clearance_category_compression",
+                dimension="product_category",
+                dimension_value="esporte_lazer",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="esporte_lazer",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_drop",
+            "customer_state=SP",
+            "product_category=cama_mesa_banho",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="average_order_value",
+        anomaly_date=date(2018, 4, 10),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
         affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 50.0",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["sports", "clearance", "seasonal_aov"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-086",
+        name="Q2 2017 Volume Recovery with Regional Concentration",
+        description=(
+            "A broad market recovery in late May 2017 drives order count above baseline, but "
+            "the uplift is concentrated in Sao Paulo and Rio de Janeiro."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=60.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_rj_acquisition_concentration",
+                dimension="customer_state",
+                dimension_value="SP",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=MG",
+            "product_category=beleza_saude",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="orders_count",
+        anomaly_date=date(2017, 5, 25),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["q2", "recovery", "regional_concentration"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-087",
+        name="December Pre-Christmas Basket Mix Shift",
+        description=(
+            "Mid-December gift buying drives a shift toward higher-ticket items like electronics "
+            "and luxury goods, expanding average basket size and lifting GMV through AOV expansion "
+            "rather than through order volume, which is broadly flat versus prior week."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_expansion",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="relogios_presentes",
+            expected_contribution_pct=65.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="gifting_basket_uplift",
+                dimension="product_category",
+                dimension_value="relogios_presentes",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="relogios_presentes",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_surge",
+            "customer_state=SP",
+            "product_category=brinquedos",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="average_order_value",
+        anomaly_date=date(2017, 12, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 50.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["christmas", "gifting", "basket_shift"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-088",
+        name="Seller Performance Degradation Driving Review Decline",
+        description=(
+            "A cluster of high-volume sellers experiencing operational issues -- delayed dispatch, "
+            "inadequate packaging, missing items -- drives a measurable decline in platform review "
+            "scores. Distinguishing seller-driven from delivery-driven decline is non-trivial."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
+            dimension_value=None,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="seller",
+            affected_value="seller_dispatch",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="seller_operational_failures",
+                dimension="seller",
+                dimension_value=None,
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="seller",
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "delivery",
+            "customer_state=SP",
+            "product_category=moveis_decoracao",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="avg_review_score",
+        anomaly_date=date(2017, 9, 20),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["avg_review_score", "seller"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score"
+        ],
+        tags=["seller_quality", "operational", "reviews"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-089",
+        name="Tech Accessories Volume Surge with Basket Compression",
+        description=(
+            "A May 2018 tech accessories promotion drives volume up significantly, but the influx "
+            "of low-ticket accessory orders simultaneously compresses average basket size. Total "
+            "GMV rises via volume -- but the AOV signal runs counter, creating analytical noise."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="product_category",
+            affected_value="informatica_acessorios",
+            expected_contribution_pct=72.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="tech_accessories_concentration",
+                dimension="product_category",
+                dimension_value="informatica_acessorios",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="informatica_acessorios",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=SP",
+            "product_category=eletrodomesticos",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2018, 5, 10),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 60.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["tech", "volume_surge", "counter_aov"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-090",
+        name="Black Friday Delivery Surge-Driven SLA Breach",
+        description=(
+            "The massive order volume surge during Black Friday week overwhelms logistics capacity, "
+            "causing widespread delivery SLA breaches. The agent must distinguish between a "
+            "carrier-quality issue and volume-driven capacity overload."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="logistics_fulfillment_bottleneck",
+            dimension="delivery",
+            dimension_value="late_delivery",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="volume_overload_capacity_breach",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "carrier_sla_degradation",
+            "customer_state=MG",
+            "product_category=cama_mesa_banho",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 11, 28),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="critical",
+        affected_dimensions=["delivery", "customer_state", "order_volume"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["black_friday", "logistics", "volume_overload"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-091",
+        name="Late October Orders Count Expansion Mixed Regional Signals",
+        description=(
+            "End-of-October order expansion shows broad market recovery but the signal is "
+            "distributed across multiple states with none clearly dominating, making attribution "
+            "to the order_volume mechanism require evidence across multiple dimensions."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=60.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="broad_regional_expansion",
+                dimension="customer_state",
+                dimension_value="MG",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="MG",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=RJ",
+            "product_category=brinquedos",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="orders_count",
+        anomaly_date=date(2017, 10, 28),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["seasonal", "broad_expansion", "multi_regional"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-092",
+        name="Category Consolidation Revenue Contraction",
+        description=(
+            "A mid-year platform category consolidation removes low-performing SKUs, shifting "
+            "the catalog toward fewer but higher-quality listings. AOV rises marginally but "
+            "total GMV declines as volume falls due to reduced catalog breadth."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="product_category",
+            affected_value="cama_mesa_banho",
+            expected_contribution_pct=62.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="catalog_consolidation_volume_impact",
+                dimension="product_category",
+                dimension_value="cama_mesa_banho",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="cama_mesa_banho",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_contraction",
+            "customer_state=SP",
+            "carrier_sla_degradation",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2018, 6, 5),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["catalog", "consolidation", "volume_impact"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-093",
+        name="Promotional Cadence Shift -- Structural Weekly Pattern Change",
+        description=(
+            "A change in promotional cadence shifts order concentration from weekends to weekdays, "
+            "creating a measured weekly aggregate decline on the comparison window. The pattern "
+            "requires careful baseline window interpretation."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=63.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_demand_pattern_shift",
+                dimension="customer_state",
+                dimension_value="SP",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=esporte_lazer",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="orders_count",
+        anomaly_date=date(2018, 7, 10),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["cadence_shift", "structural", "pattern"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-094",
+        name="Competitive Discount Pressure Basket Contraction",
+        description=(
+            "Intensifying marketplace competition in mid-2017 forces price reductions across "
+            "the mid-tier product range, compressing average order value while maintaining "
+            "broadly stable order volumes."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_contraction",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="cama_mesa_banho",
+            expected_contribution_pct=61.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="competitive_pricing_pressure",
+                dimension="product_category",
+                dimension_value="cama_mesa_banho",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="product_category",
+                affected_value="cama_mesa_banho",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_drop",
+            "customer_state=SP",
+            "carrier_sla_degradation",
+        ],
+        difficulty="medium",
+        is_insufficient_evidence=False,
+        target_metric="average_order_value",
+        anomaly_date=date(2017, 7, 20),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["average_order_value", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 50.0",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["competition", "pricing_pressure", "basket_contraction"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-095",
-        name="Incident Diagnostic Investigation SCN-095: Orders Count",
+        name="High-Frequency Delivery Issues Compounding Review Score Drop",
         description=(
-            "Multi-dimensional business investigation on 2017-04-18 evaluating observed shift in orders_count against historical baseline."
+            "A sustained period of elevated delivery delays produces a compounding review score "
+            "decline, with multiple negative delivery review clusters appearing across categories. "
+            "Distinguishing category quality issues from delivery SLA issues is required."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
             dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="delivery",
+            affected_value="late_delivery",
+            expected_contribution_pct=None,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
+                cause_id="sustained_delivery_friction",
+                dimension="delivery",
+                dimension_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
+            "product_category=utilidades_domesticas",
+            "seller",
             "order_volume_surge",
-            "average_order_value_expansion",
         ],
-        difficulty="easy",
+        difficulty="medium",
         is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 4, 18),
-        comparison_days=7,
-        expected_direction="increase",
+        target_metric="avg_review_score",
+        anomaly_date=date(2018, 4, 25),
+        comparison_days=14,
+        expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
+        affected_dimensions=["avg_review_score", "delivery"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score",
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+        ],
+        tags=["delivery", "reviews", "sustained_degradation"],
     ),
+    # --- HARD (SCN-096 to SCN-115) ---
     GroundTruthScenario(
         scenario_id="SCN-096",
-        name="Incident Diagnostic Investigation SCN-096: Orders Count",
+        name="Near-Equal Volume vs AOV Split GMV Decline",
         description=(
-            "Multi-dimensional business investigation on 2017-05-02 evaluating observed shift in orders_count against historical baseline."
+            "A GMV decline shows a near-equal split between order volume contraction (51%) and "
+            "average basket compression (49%). Neither driver clearly dominates; correct "
+            "attribution requires precise decomposition and avoiding confirmation bias."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_drop",
@@ -4083,174 +4296,62 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_category="macro_driver",
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=52.0,
+            affected_value="SP",
+            expected_contribution_pct=51.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="MG",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="MG",
+                cause_id="simultaneous_aov_compression",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=49.0,
+            )
+        ],
+        acceptable_alternative_causes=[
+            GroundTruthRootCause(
+                cause_id="average_order_value_contraction",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
+            "carrier_sla_degradation",
+            "product_category=cama_mesa_banho",
             "customer_state=MG",
-            "order_volume_drop",
-            "average_order_value_contraction",
         ],
         difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 5, 2),
-        comparison_days=14,
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 10, 5),
+        comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "hard", "synthetic_expansion"],
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 45.0",
+            "aov_contribution_pct > 40.0",
+            "observed_orders < baseline_orders",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["competing_drivers", "near_equal_split", "hard_attribution"],
     ),
     GroundTruthScenario(
         scenario_id="SCN-097",
-        name="Incident Diagnostic Investigation SCN-097: Average Order Value",
+        name="Review Score Decline: Delivery Delay or Product Quality",
         description=(
-            "Multi-dimensional business investigation on 2017-05-18 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="informatica_acessorios",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="informatica_acessorios",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 5, 18),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-098",
-        name="Incident Diagnostic Investigation SCN-098: Average Order Value",
-        description=(
-            "Multi-dimensional business investigation on 2017-06-01 evaluating observed shift in average_order_value against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="utilidades_domesticas",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="utilidades_domesticas",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 6, 1),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-099",
-        name="Incident Diagnostic Investigation SCN-099: Late Delivery Rate Pct",
-        description=(
-            "Multi-dimensional business investigation on 2017-06-15 evaluating observed shift in late_delivery_rate_pct against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2017, 6, 15),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="critical",
-        affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-100",
-        name="Incident Diagnostic Investigation SCN-100: Avg Review Score",
-        description=(
-            "Multi-dimensional business investigation on 2017-07-02 evaluating observed shift in avg_review_score against historical baseline."
+            "A review score decline in May 2018 co-occurs with both an uptick in late deliveries "
+            "and a cluster of product mismatch complaints in the electronics category. "
+            "Both mechanisms are plausible and the agent must weigh the evidence to identify "
+            "the dominant causal pathway."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="customer_satisfaction_decline",
@@ -4264,51 +4365,57 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="delivery",
-                dimension_value="late_delivery",
+                cause_id="product_quality_mismatch_complaints",
+                dimension="product_category",
+                dimension_value="informatica_acessorios",
                 causal_category="segment_concentration",
                 causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
+                affected_dimension="product_category",
+                affected_value="informatica_acessorios",
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=late_delivery",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "product_category=informatica_acessorios",
+            "order_volume_surge",
+            "customer_state=SP",
         ],
         difficulty="hard",
         is_insufficient_evidence=False,
         target_metric="avg_review_score",
-        anomaly_date=date(2017, 7, 2),
+        anomaly_date=date(2018, 5, 15),
         comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "hard", "synthetic_expansion"],
+        affected_dimensions=["avg_review_score", "delivery", "product_category"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score",
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+        ],
+        tags=["competing_review_drivers", "hard", "causal_ambiguity"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-101",
-        name="Incident Diagnostic Investigation SCN-101: Total Gmv",
+        scenario_id="SCN-098",
+        name="Seasonal Trend vs Structural Volume Decline Ambiguity",
         description=(
-            "Multi-dimensional business investigation on 2017-07-22 evaluating observed shift in total_gmv against historical baseline."
+            "September 2017 shows a volume decline that could be attributed to seasonal "
+            "back-to-school spending fatigue or to a structural acquisition channel disruption. "
+            "Both hypotheses produce similar-looking data patterns, requiring multi-signal "
+            "corroboration."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
+            cause_id="order_volume_drop",
             dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=53.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="sp_seasonal_softening",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -4318,217 +4425,58 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
                 expected_contribution_pct=None,
             )
         ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 7, 22),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-102",
-        name="Incident Diagnostic Investigation SCN-102: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-08-08 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
+        acceptable_alternative_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="beleza_saude",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="beleza_saude",
+                cause_id="acquisition_channel_disruption",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=beleza_saude",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 8, 8),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-103",
-        name="Incident Diagnostic Investigation SCN-103: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-08-22 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
             "average_order_value_contraction",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 8, 22),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-104",
-        name="Incident Diagnostic Investigation SCN-104: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-09-05 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="cama_mesa_banho",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="cama_mesa_banho",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=esporte_lazer",
         ],
         difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 9, 5),
+        is_insufficient_evidence=False,
+        target_metric="orders_count",
+        anomaly_date=date(2017, 9, 10),
         comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 45.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["seasonal_vs_structural", "hard", "ambiguity"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-105",
-        name="Incident Diagnostic Investigation SCN-105: Orders Count",
+        scenario_id="SCN-099",
+        name="Multi-Region Delivery Confusion Which State Drives the Rate",
         description=(
-            "Multi-dimensional business investigation on 2017-09-25 evaluating observed shift in orders_count against historical baseline."
+            "A late delivery rate spike in February 2018 is distributed across SP, MG, and RJ "
+            "without a single state clearly dominating. The challenge is to determine whether "
+            "this is a uniform national carrier issue or a combination of independent state events."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=None,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 9, 25),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-106",
-        name="Incident Diagnostic Investigation SCN-106: Orders Count",
-        description=(
-            "Multi-dimensional business investigation on 2017-10-10 evaluating observed shift in orders_count against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_drop",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="MG",
-            expected_contribution_pct=62.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="mg_rj_secondary_delay",
                 dimension="customer_state",
                 dimension_value="MG",
                 causal_category="segment_concentration",
@@ -4539,70 +4487,81 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=MG",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "customer_state=RJ",
+            "order_volume_surge",
+            "product_category=cama_mesa_banho",
         ],
-        difficulty="medium",
+        difficulty="hard",
         is_insufficient_evidence=False,
-        target_metric="orders_count",
-        anomaly_date=date(2017, 10, 10),
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2018, 2, 20),
         comparison_days=7,
-        expected_direction="decrease",
+        expected_direction="increase",
         severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "medium", "synthetic_expansion"],
+        affected_dimensions=["delivery", "customer_state"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
+        ],
+        tags=["multi_state", "carrier", "hard_attribution"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-107",
-        name="Incident Diagnostic Investigation SCN-107: Average Order Value",
+        scenario_id="SCN-100",
+        name="Early Holiday Volume Surge with Countervailing AOV Noise",
         description=(
-            "Multi-dimensional business investigation on 2017-10-25 evaluating observed shift in average_order_value against historical baseline."
+            "Early December 2016 shows strong order growth but the simultaneous influx of small "
+            "accessory orders from holiday promotions compresses average basket value, creating "
+            "noise in the decomposition. Volume dominates but the negative AOV signal creates "
+            "attribution ambiguity."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
+            cause_id="order_volume_surge",
+            dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="informatica_acessorios",
-            expected_contribution_pct=80.0,
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=73.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="informatica_acessorios",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="informatica_acessorios",
+                cause_id="holiday_basket_compression_noise",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=informatica_acessorios",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "average_order_value_contraction",
+            "product_category=brinquedos",
+            "customer_state=RJ",
         ],
-        difficulty="easy",
+        difficulty="hard",
         is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 10, 25),
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 12, 10),
         comparison_days=7,
         expected_direction="increase",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "easy", "synthetic_expansion"],
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 60.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["holiday", "noisy_decomposition", "hard"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-108",
-        name="Incident Diagnostic Investigation SCN-108: Average Order Value",
+        scenario_id="SCN-101",
+        name="Category Shift or Order Volume Drop Ambiguous GMV Decline",
         description=(
-            "Multi-dimensional business investigation on 2017-11-05 evaluating observed shift in average_order_value against historical baseline."
+            "A July 2017 GMV decline can be explained by either an AOV contraction caused by "
+            "category mix shift toward cheaper items, or a genuine order volume drop. "
+            "Both signals appear simultaneously at comparable magnitudes."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="average_order_value_contraction",
@@ -4611,86 +4570,60 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_category="macro_driver",
             causal_mechanism="average_order_value",
             affected_dimension="product_category",
-            affected_value="utilidades_domesticas",
-            expected_contribution_pct=52.0,
+            affected_value="beleza_saude",
+            expected_contribution_pct=53.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="product_category",
-                dimension_value="utilidades_domesticas",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="product_category",
-                affected_value="utilidades_domesticas",
+                cause_id="order_volume_mild_softening",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=47.0,
+            )
+        ],
+        acceptable_alternative_causes=[
+            GroundTruthRootCause(
+                cause_id="order_volume_drop",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=utilidades_domesticas",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "customer_state=RJ",
+            "product_category=cama_mesa_banho",
         ],
         difficulty="hard",
         is_insufficient_evidence=False,
-        target_metric="average_order_value",
-        anomaly_date=date(2017, 11, 5),
-        comparison_days=14,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 7, 25),
+        comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["average_order_value", "hard", "synthetic_expansion"],
+        affected_dimensions=["average_order_value", "order_volume", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 45.0",
+            "volume_contribution_pct > 40.0",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["competing_drivers", "ambiguous", "hard"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-109",
-        name="Incident Diagnostic Investigation SCN-109: Late Delivery Rate Pct",
+        scenario_id="SCN-102",
+        name="Review Score Decline Delivery SLA or Furniture Product Quality",
         description=(
-            "Multi-dimensional business investigation on 2017-11-15 evaluating observed shift in late_delivery_rate_pct against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="carrier_sla_degradation",
-            dimension="delivery",
-            dimension_value=None,
-            causal_category="operational_mechanism",
-            causal_mechanism="delivery",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=None,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="late_delivery_rate_pct",
-        anomaly_date=date(2017, 11, 15),
-        comparison_days=7,
-        expected_direction="increase",
-        severity="critical",
-        affected_dimensions=["delivery", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["late_delivery_rate_pct", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-110",
-        name="Incident Diagnostic Investigation SCN-110: Avg Review Score",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-01 evaluating observed shift in avg_review_score against historical baseline."
+            "An August 2017 review score decline shows elevated late delivery rates in SP alongside "
+            "a cluster of product quality complaints in furniture. Both mechanisms produce negative "
+            "reviews; the delivery signal is slightly more prevalent but product signal is louder."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="customer_satisfaction_decline",
@@ -4704,125 +4637,90 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="delivery",
-                dimension_value="late_delivery",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="delivery",
-                affected_value="late_delivery",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=late_delivery",
-            "order_volume_drop",
-            "average_order_value_contraction",
-        ],
-        difficulty="medium",
-        is_insufficient_evidence=False,
-        target_metric="avg_review_score",
-        anomaly_date=date(2017, 12, 1),
-        comparison_days=7,
-        expected_direction="decrease",
-        severity="warning",
-        affected_dimensions=["avg_review_score", "delivery"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["avg_review_score", "medium", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-111",
-        name="Incident Diagnostic Investigation SCN-111: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-12 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="order_volume_surge",
-            dimension="order_volume",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="order_volume",
-            affected_dimension="customer_state",
-            affected_value="SP",
-            expected_contribution_pct=80.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="SP",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="SP",
-                expected_contribution_pct=None,
-            )
-        ],
-        distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
-        ],
-        difficulty="easy",
-        is_insufficient_evidence=False,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 12, 12),
-        comparison_days=14,
-        expected_direction="increase",
-        severity="warning",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
-    ),
-    GroundTruthScenario(
-        scenario_id="SCN-112",
-        name="Incident Diagnostic Investigation SCN-112: Total Gmv",
-        description=(
-            "Multi-dimensional business investigation on 2017-12-22 evaluating observed shift in total_gmv against historical baseline."
-        ),
-        primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_expansion",
-            dimension="average_order_value",
-            dimension_value=None,
-            causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="beleza_saude",
-            expected_contribution_pct=52.0,
-        ),
-        secondary_causes=[
-            GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="furniture_product_quality_complaints",
                 dimension="product_category",
-                dimension_value="beleza_saude",
+                dimension_value="moveis_decoracao",
                 causal_category="segment_concentration",
                 causal_mechanism=None,
                 affected_dimension="product_category",
-                affected_value="beleza_saude",
+                affected_value="moveis_decoracao",
                 expected_contribution_pct=None,
             )
         ],
         distractor_causes=[
-            "customer_state=beleza_saude",
+            "product_category=moveis_decoracao",
             "order_volume_surge",
-            "average_order_value_expansion",
+            "customer_state=SP",
         ],
         difficulty="hard",
-        is_insufficient_evidence=True,
-        target_metric="total_gmv",
-        anomaly_date=date(2017, 12, 22),
+        is_insufficient_evidence=False,
+        target_metric="avg_review_score",
+        anomaly_date=date(2017, 8, 25),
         comparison_days=7,
-        expected_direction="increase",
+        expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "hard", "synthetic_expansion"],
+        affected_dimensions=["avg_review_score", "delivery", "product_category"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score"
+        ],
+        tags=["review_ambiguity", "hard", "competing_quality_signals"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-113",
-        name="Incident Diagnostic Investigation SCN-113: Total Gmv",
+        scenario_id="SCN-103",
+        name="Multi-Carrier SLA vs Peak Volume Late Delivery Black Friday",
         description=(
-            "Multi-dimensional business investigation on 2018-01-05 evaluating observed shift in total_gmv against historical baseline."
+            "Black Friday 2017 late delivery spike raises the question: is this a carrier SLA "
+            "failure or pure volume overload? Both explanations are plausible given the concurrent "
+            "order surge, requiring the agent to separate volume-driven delays from SLA degradation."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="logistics_fulfillment_bottleneck",
+            dimension="delivery",
+            dimension_value="late_delivery",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="volume_surge_overload",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "carrier_sla_degradation",
+            "customer_state=MG",
+            "product_category=eletrodomesticos",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 11, 30),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="critical",
+        affected_dimensions=["delivery", "customer_state", "order_volume"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["black_friday", "delivery", "competing_explanations"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-104",
+        name="Platform Revenue Softening Volume or Pricing Pressure",
+        description=(
+            "January 2018 shows a GMV decline that could be attributed to post-holiday volume "
+            "exhaustion or to January clearance pricing compressing average order values. "
+            "The competitive pricing signal is present but the volume signal is slightly stronger."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_drop",
@@ -4831,56 +4729,100 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_category="macro_driver",
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
-            affected_value="RJ",
-            expected_contribution_pct=80.0,
+            affected_value="SP",
+            expected_contribution_pct=55.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
-                dimension="customer_state",
-                dimension_value="RJ",
-                causal_category="segment_concentration",
-                causal_mechanism=None,
-                affected_dimension="customer_state",
-                affected_value="RJ",
-                expected_contribution_pct=None,
+                cause_id="january_clearance_aov_compression",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=45.0,
             )
         ],
         distractor_causes=[
-            "customer_state=RJ",
-            "order_volume_drop",
-            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "customer_state=MG",
+            "product_category=cama_mesa_banho",
         ],
-        difficulty="easy",
+        difficulty="hard",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
-        anomaly_date=date(2018, 1, 5),
-        comparison_days=7,
+        anomaly_date=date(2018, 1, 10),
+        comparison_days=14,
         expected_direction="decrease",
-        severity="critical",
-        affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "easy", "synthetic_expansion"],
+        severity="warning",
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 45.0",
+            "aov_contribution_pct > 35.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["january", "competing_drivers", "hard"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-114",
-        name="Incident Diagnostic Investigation SCN-114: Total Gmv",
+        scenario_id="SCN-105",
+        name="Ambiguous Weekly Fluctuation Insufficient Evidence",
         description=(
-            "Multi-dimensional business investigation on 2018-01-18 evaluating observed shift in total_gmv against historical baseline."
+            "Early October 2016 shows a modest order count variation that falls within normal "
+            "weekly statistical noise. Multiple mechanisms are weakly suggested but none produces "
+            "a clear dominant signal, representing a genuinely insufficient evidence case."
         ),
         primary_cause=GroundTruthRootCause(
-            cause_id="average_order_value_contraction",
-            dimension="average_order_value",
+            cause_id="order_volume_drop",
+            dimension="order_volume",
             dimension_value=None,
             causal_category="macro_driver",
-            causal_mechanism="average_order_value",
-            affected_dimension="product_category",
-            affected_value="cama_mesa_banho",
-            expected_contribution_pct=62.0,
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[],
+        distractor_causes=[
+            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=beleza_saude",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=True,
+        target_metric="orders_count",
+        anomaly_date=date(2016, 10, 5),
+        comparison_days=7,
+        expected_direction="normal",
+        severity="normal",
+        affected_dimensions=["order_volume"],
+        expected_evidence_signals=[
+            "observed_value within_noise_threshold",
+            "no_dominant_signal",
+        ],
+        tags=["insufficient_evidence", "noise", "ambiguous"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-106",
+        name="SP-Driven vs Category-Driven GMV Decline Correlated Dimensions",
+        description=(
+            "A March 2018 revenue drop is explained partly by SP order softening and partly by "
+            "a volume decline in the cama_mesa_banho category. Both dimensions are correlated -- "
+            "SP is the main buyer of that category -- making clean causal attribution difficult."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=57.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="bed_bath_category_volume_drop",
                 dimension="product_category",
                 dimension_value="cama_mesa_banho",
                 causal_category="segment_concentration",
@@ -4891,26 +4833,31 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=cama_mesa_banho",
-            "order_volume_drop",
             "average_order_value_contraction",
+            "customer_state=RJ",
+            "carrier_sla_degradation",
         ],
-        difficulty="medium",
+        difficulty="hard",
         is_insufficient_evidence=False,
         target_metric="total_gmv",
-        anomaly_date=date(2018, 1, 18),
-        comparison_days=14,
+        anomaly_date=date(2018, 3, 10),
+        comparison_days=7,
         expected_direction="decrease",
         severity="warning",
-        affected_dimensions=["average_order_value", "product_category"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["total_gmv", "medium", "synthetic_expansion"],
+        affected_dimensions=["order_volume", "customer_state", "product_category"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 45.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["correlated_dimensions", "sp_category_overlap", "hard"],
     ),
     GroundTruthScenario(
-        scenario_id="SCN-115",
-        name="Incident Diagnostic Investigation SCN-115: Orders Count",
+        scenario_id="SCN-107",
+        name="AOV Contraction vs Volume Surge Net Positive GMV",
         description=(
-            "Multi-dimensional business investigation on 2018-02-02 evaluating observed shift in orders_count against historical baseline."
+            "June 2017 shows a net GMV increase driven by order volume surge, but a concurrent "
+            "AOV contraction partially offsets it. The agent must correctly decompose the competing "
+            "effects and identify volume as the net positive driver despite AOV headwinds."
         ),
         primary_cause=GroundTruthRootCause(
             cause_id="order_volume_surge",
@@ -4920,11 +4867,148 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             causal_mechanism="order_volume",
             affected_dimension="customer_state",
             affected_value="SP",
-            expected_contribution_pct=80.0,
+            expected_contribution_pct=68.0,
         ),
         secondary_causes=[
             GroundTruthRootCause(
-                cause_id="secondary_segment_driver",
+                cause_id="aov_headwind_offset",
+                dimension="average_order_value",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="average_order_value",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=MG",
+            "product_category=cama_mesa_banho",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 6, 5),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["order_volume", "average_order_value", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 55.0",
+            "observed_orders > baseline_orders",
+            "observed_aov < baseline_aov",
+        ],
+        tags=["counter_aov", "hard_decomposition", "competing_effects"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-108",
+        name="Delivery Delay Plus Seller Quality Dual Mechanism Late Delivery",
+        description=(
+            "A June 2018 late delivery spike is caused jointly by carrier SLA failures in SP "
+            "and by a cluster of large sellers failing to dispatch orders on time. Attributing "
+            "to carrier vs seller is non-trivial without examining dispatch timing data."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="seller_dispatch_delay_contribution",
+                dimension="seller",
+                dimension_value=None,
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="seller",
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "order_volume_surge",
+            "product_category=moveis_decoracao",
+            "customer_state=MG",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2018, 6, 15),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state", "seller"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
+        ],
+        tags=["dual_mechanism", "seller_vs_carrier", "hard"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-109",
+        name="Review Score Decline Small Sample Size Early Dataset",
+        description=(
+            "Early Olist data in October 2016 shows a modest review score decline, but the "
+            "sample size of reviews in this early period is small, making the signal noisy. "
+            "The agent must weigh whether the decline is statistically meaningful."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="customer_satisfaction_decline",
+            dimension="avg_review_score",
+            dimension_value=None,
+            causal_category="operational_mechanism",
+            causal_mechanism="avg_review_score",
+            affected_dimension="delivery",
+            affected_value="late_delivery",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[],
+        distractor_causes=[
+            "product_category=utilidades_domesticas",
+            "order_volume_drop",
+            "seller",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=True,
+        target_metric="avg_review_score",
+        anomaly_date=date(2017, 1, 25),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="normal",
+        affected_dimensions=["avg_review_score"],
+        expected_evidence_signals=[
+            "observed_avg_review_score < baseline_avg_review_score"
+        ],
+        tags=["small_sample", "noise", "early_data", "hard"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-110",
+        name="Volume to Delivery to Review Causal Chain Investigation",
+        description=(
+            "A prior-week volume surge overwhelmed logistics, elevated late delivery rates, and "
+            "then cascaded into a review score decline. This scenario tests whether the agent can "
+            "trace back through a multi-step causal chain to identify the originating volume "
+            "contraction as the current-week root cause."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=62.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_volume_softening_march",
                 dimension="customer_state",
                 dimension_value="SP",
                 causal_category="segment_concentration",
@@ -4935,20 +5019,285 @@ BENCHMARK_SCENARIOS: list[GroundTruthScenario] = [
             )
         ],
         distractor_causes=[
-            "customer_state=SP",
-            "order_volume_surge",
-            "average_order_value_expansion",
+            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=beleza_saude",
         ],
-        difficulty="easy",
+        difficulty="hard",
         is_insufficient_evidence=False,
         target_metric="orders_count",
-        anomaly_date=date(2018, 2, 2),
+        anomaly_date=date(2017, 3, 1),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["causal_chain", "multi_metric", "hard"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-111",
+        name="Competing Category Mix Shifts in AOV Hard Attribution",
+        description=(
+            "September 2017 GMV growth is partially explained by rising AOV driven by electronics, "
+            "but simultaneously offset by a category shift toward low-ticket fashion goods. "
+            "The net AOV effect is positive but requires disentangling two opposing category "
+            "movements."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="average_order_value_expansion",
+            dimension="average_order_value",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="average_order_value",
+            affected_dimension="product_category",
+            affected_value="eletrodomesticos",
+            expected_contribution_pct=56.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="order_volume_moderate_uplift",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=44.0,
+            )
+        ],
+        distractor_causes=[
+            "product_category=beleza_saude",
+            "customer_state=SP",
+            "carrier_sla_degradation",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2017, 9, 25),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["average_order_value", "order_volume", "product_category"],
+        expected_evidence_signals=[
+            "aov_contribution_pct > 45.0",
+            "observed_aov > baseline_aov",
+        ],
+        tags=["competing_category_shifts", "aov_attribution", "hard"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-112",
+        name="Volume-Led Revenue Recovery Ambiguous Segment Attribution",
+        description=(
+            "A July 2018 GMV recovery shows volume growth but the state-level attribution is "
+            "ambiguous: SP leads, but MG and PR show disproportionate growth relative to their "
+            "baseline. Correct attribution to the macro order_volume mechanism requires "
+            "distinguishing which segment is primary."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_surge",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=59.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="mg_pr_secondary_volume_contribution",
+                dimension="customer_state",
+                dimension_value="MG",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="MG",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_expansion",
+            "customer_state=MG",
+            "product_category=ferramentas_jardim",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2018, 7, 15),
         comparison_days=7,
         expected_direction="increase",
         severity="warning",
         affected_dimensions=["order_volume", "customer_state"],
-        expected_evidence_signals=["observed_value != baseline_value"],
-        tags=["orders_count", "easy", "synthetic_expansion"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders > baseline_orders",
+        ],
+        tags=["segment_ambiguity", "recovery", "hard"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-113",
+        name="Multi-Cause Late Delivery Insufficient Analytical Evidence",
+        description=(
+            "May 2017 shows elevated late delivery rates coinciding with multiple potential "
+            "causes: a partial freight work-to-rule action, regional flooding in Bahia, and a "
+            "concurrent peak in furniture deliveries. The evidence is too diffuse to isolate a "
+            "single root cause with confidence."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="BA",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[],
+        distractor_causes=[
+            "order_volume_surge",
+            "customer_state=SP",
+            "product_category=moveis_decoracao",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=True,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 5, 10),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate"
+        ],
+        tags=["insufficient_evidence", "multi_cause", "ambiguous_delivery"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-114",
+        name="Seasonal vs Operational Delivery Delay July 2017",
+        description=(
+            "A late delivery rate increase in July 2017 coincides with the Brazilian winter "
+            "holiday school break, which drives volume in toy and book categories, but also "
+            "with a reported carrier network reconfiguration. Seasonal volume effects and "
+            "operational carrier changes are competing explanations."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="carrier_sla_degradation",
+            dimension="delivery",
+            dimension_value="carrier_transit_delay",
+            causal_category="operational_mechanism",
+            causal_mechanism="delivery",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=None,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="winter_holiday_volume_overload",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        acceptable_alternative_causes=[
+            GroundTruthRootCause(
+                cause_id="logistics_fulfillment_bottleneck",
+                dimension="delivery",
+                dimension_value="late_delivery",
+                causal_category="operational_mechanism",
+                causal_mechanism="delivery",
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "product_category=brinquedos",
+            "customer_state=RJ",
+            "average_order_value_expansion",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="late_delivery_rate_pct",
+        anomaly_date=date(2017, 7, 20),
+        comparison_days=7,
+        expected_direction="increase",
+        severity="warning",
+        affected_dimensions=["delivery", "customer_state", "order_volume"],
+        expected_evidence_signals=[
+            "observed_late_delivery_rate > baseline_late_delivery_rate",
+            "avg_delivery_days_change > 0",
+        ],
+        tags=["seasonal_vs_operational", "delivery", "competing_explanations"],
+    ),
+    GroundTruthScenario(
+        scenario_id="SCN-115",
+        name="End-of-Dataset August 2018 Volume Trend Ambiguity",
+        description=(
+            "The final weeks of the Olist dataset (August 2018) show a volume decline that could "
+            "reflect genuine market softening, truncated data coverage, or the tail of the "
+            "Brazilian truckers strike aftermath. Minimal historical comparison context makes "
+            "confident attribution challenging."
+        ),
+        primary_cause=GroundTruthRootCause(
+            cause_id="order_volume_drop",
+            dimension="order_volume",
+            dimension_value=None,
+            causal_category="macro_driver",
+            causal_mechanism="order_volume",
+            affected_dimension="customer_state",
+            affected_value="SP",
+            expected_contribution_pct=60.0,
+        ),
+        secondary_causes=[
+            GroundTruthRootCause(
+                cause_id="sp_end_of_dataset_softening",
+                dimension="customer_state",
+                dimension_value="SP",
+                causal_category="segment_concentration",
+                causal_mechanism=None,
+                affected_dimension="customer_state",
+                affected_value="SP",
+                expected_contribution_pct=None,
+            )
+        ],
+        acceptable_alternative_causes=[
+            GroundTruthRootCause(
+                cause_id="truckers_strike_aftermath",
+                dimension="order_volume",
+                dimension_value=None,
+                causal_category="macro_driver",
+                causal_mechanism="order_volume",
+                affected_dimension=None,
+                affected_value=None,
+                expected_contribution_pct=None,
+            )
+        ],
+        distractor_causes=[
+            "average_order_value_contraction",
+            "carrier_sla_degradation",
+            "product_category=ferramentas_jardim",
+        ],
+        difficulty="hard",
+        is_insufficient_evidence=False,
+        target_metric="total_gmv",
+        anomaly_date=date(2018, 8, 10),
+        comparison_days=7,
+        expected_direction="decrease",
+        severity="warning",
+        affected_dimensions=["order_volume", "customer_state"],
+        expected_evidence_signals=[
+            "volume_contribution_pct > 50.0",
+            "observed_orders < baseline_orders",
+        ],
+        tags=["dataset_end", "truckers_strike", "hard_attribution"],
     ),
 ]
 

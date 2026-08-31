@@ -50,7 +50,12 @@ data/synthetic/*
 pgdata/
 
 # Generated Evaluation Reports
-evaluation/reports/*
+evaluation/reports/agent_comparison_latest.json
+evaluation/reports/agent_comparison_latest.md
+evaluation/reports/latest_hallucination_benchmark.json
+evaluation/reports/latest_hallucination_benchmark.md
+!evaluation/reports/latest_benchmark.md
+!evaluation/reports/latest_benchmark.json
 !evaluation/reports/.gitkeep
 
 # Logs & Debugging

@@ -177,14 +177,33 @@ def generate_markdown_report(summary: BenchmarkSummary) -> str:
     return "\n".join(lines)
 
 
+_AGENT_APPROVED_DIMENSIONS = frozenset(
+    [
+        "product_category",
+        "customer_state",
+        "seller",
+        "order_volume",
+        "average_order_value",
+        "delivery",
+    ]
+)
+
+
 def run_scenario(scenario: GroundTruthScenario, conn: Any = None) -> EvaluationResult:
     """Execute a single scenario against the investigation agent and evaluate."""
+    # Filter affected_dimensions to the agent's approved investigation axes.
+    # Scenario metadata may include analytical dimensions (e.g. 'avg_review_score')
+    # that are valid for evaluation context but not accepted by the agent validator.
+    approved_dims = [
+        d
+        for d in (scenario.affected_dimensions or [])
+        if d in _AGENT_APPROVED_DIMENSIONS
+    ]
     request = InvestigationAgentRequest(
         metric=scenario.target_metric,
         anomaly_date=scenario.anomaly_date,
         comparison_days=scenario.comparison_days,
-        dimensions=scenario.affected_dimensions
-        or ["product_category", "customer_state", "seller"],
+        dimensions=approved_dims or ["product_category", "customer_state", "seller"],
         max_investigation_steps=6,
         minimum_contribution_pct=5.0,
     )
@@ -295,17 +314,20 @@ def run_benchmark(
     print("--------------------------------------------------------")
     print(" Performance by Difficulty Tier:")
     if summary.easy_count > 0 and summary.easy_top1_accuracy is not None:
-        print(
-            f"   Easy   ({summary.easy_count:2d} scenarios): Top-1 = {summary.easy_top1_accuracy:5.1f}% | MRR = {summary.easy_mrr:.4f}"
-        )
+        acc = summary.easy_top1_accuracy
+        mrr = summary.easy_mrr
+        n = summary.easy_count
+        print(f"   Easy   ({n:2d} scenarios): Top-1 = {acc:5.1f}% | MRR = {mrr:.4f}")
     if summary.medium_count > 0 and summary.medium_top1_accuracy is not None:
-        print(
-            f"   Medium ({summary.medium_count:2d} scenarios): Top-1 = {summary.medium_top1_accuracy:5.1f}% | MRR = {summary.medium_mrr:.4f}"
-        )
+        acc = summary.medium_top1_accuracy
+        mrr = summary.medium_mrr
+        n = summary.medium_count
+        print(f"   Medium ({n:2d} scenarios): Top-1 = {acc:5.1f}% | MRR = {mrr:.4f}")
     if summary.hard_count > 0 and summary.hard_top1_accuracy is not None:
-        print(
-            f"   Hard   ({summary.hard_count:2d} scenarios): Top-1 = {summary.hard_top1_accuracy:5.1f}% | MRR = {summary.hard_mrr:.4f}"
-        )
+        acc = summary.hard_top1_accuracy
+        mrr = summary.hard_mrr
+        n = summary.hard_count
+        print(f"   Hard   ({n:2d} scenarios): Top-1 = {acc:5.1f}% | MRR = {mrr:.4f}")
     print("========================================================\n")
 
     # Generate Reports

@@ -1,141 +1,212 @@
 # RootCause AI
 
+### Autonomous Business Root-Cause Investigation
+
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7.svg)](https://rootcause-ai-mcbj.onrender.com)
 [![CI Quality Gate](https://github.com/Ishita-1408/RootCause-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/Ishita-1408/RootCause-AI/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB.svg)](https://reactjs.org/)
-[![Top-1 Accuracy](https://img.shields.io/badge/Canonical%20Top--1-100%25%20(6%2F6)-brightgreen.svg)]()
-[![Hallucination Rate](https://img.shields.io/badge/Claim%20Hallucination%20Rate-0.0%25-brightgreen.svg)]()
-[![Pytest](https://img.shields.io/badge/Pytest-258%20passed-success.svg)]()
+[![Top-1 Accuracy](https://img.shields.io/badge/Benchmark%20Top--1-87.0%25%20(115%20Scenarios)-brightgreen.svg)]()
+[![Benchmark Hallucination](https://img.shields.io/badge/Benchmark%20Hallucination-0.0%25-brightgreen.svg)]()
+[![Pytest](https://img.shields.io/badge/Pytest-269%20passed-success.svg)]()
 [![Type Checked](https://img.shields.io/badge/Mypy-strict%20checked-blue.svg)]()
 
-> **Autonomous Business Investigation Platform with Deterministic Causal Hypothesis Ranking, Statistical Significance Bounds, and Zero-Hallucination Claim Firewalls.**
+[**🚀 Live Demo**](https://rootcause-ai-mcbj.onrender.com) &nbsp;|&nbsp; [**💻 GitHub Repository**](https://github.com/Ishita-1408/RootCause-AI) &nbsp;|&nbsp; [**📊 Benchmark Report**](#evaluation--benchmark)
 
-🔗 **Live Production Demo:** [https://rootcause-ai-mcbj.onrender.com](https://rootcause-ai-mcbj.onrender.com)
-*(The live demo deployment is intentionally unauthenticated so all analytical engines and AI memo generators can be evaluated directly without login.)*
+> **Why did revenue change?**<br>
+> **What actually drove it?**<br>
+> **What evidence supports the finding?**<br>
+> **What should the business do next?**
 
----
+RootCause AI automatically investigates business KPI anomalies, ranks competing root-cause hypotheses using multiple statistical and analytical signals, builds an interactive evidence graph, and produces evidence-backed recommendations.
 
-## 📌 Executive Overview & The Problem
-
-Modern analytics, data science, and business intelligence teams spend hundreds of manual hours answering executive questions like:
-> *"Why did Gross Merchandise Value (GMV) drop 28.4% on November 20th?"*
-
-When organizations delegate these diagnostic investigations to generic Large Language Models (LLMs), they encounter two fatal failure modes:
-1. **Numerical Hallucination:** LLMs invent plausible-sounding percentage shifts, incorrect baseline comparisons, and contradictory metrics not grounded in underlying transactional feature marts.
-2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly concentrated (e.g., "São Paulo order volume dropped") with *why* it occurred (e.g., "Carrier transit delays increased by +4.2 days, causing severe delivery SLA breaches").
-
-**RootCause AI** eliminates both failure modes through a deterministic architecture where **the LLM is NOT the source of numerical truth**. All metrics, mathematical variance decompositions, statistical significance bounds, and ranking algorithms are computed by deterministic Python and SQL engines, while an online Claim Verification Firewall guarantees 0% hallucinated claims in generated leadership memos.
+**87.0% Top-1** &nbsp;|&nbsp; **96.5% Top-3** &nbsp;|&nbsp; **115 Scenarios** &nbsp;|&nbsp; **0% Benchmark Hallucination**
 
 ---
 
-## 🚀 Key Platform Capabilities
+## Problem
 
-- **🔍 Autonomous Multi-Step Agent:** Dynamic priority planner that executes targeted SQL queries against PostgreSQL analytical feature marts without human intervention.
-- **➗ Exact Multiplicative Decomposition:** Mathematically isolates volume versus average order value (AOV) effects down to the exact Brazilian Real (BRL).
-- **📊 Statistical Confidence & Change-Point Engine:** Evaluates statistical significance with Welch $t$-intervals (continuous metrics), Wilson score bounds (proportions), and PELT / CUSUM change-point detectors.
-- **🛡️ 0% Hallucination Claim Firewall:** Intercepts agent memo generation, parses numerical claims, and verifies them against the active analytical evidence pool.
-- **🕸️ Forensic Evidence Graph (DAG):** Interactive 7-tier Directed Acyclic Graph (`INCIDENT` $\to$ `ANOMALY` $\to$ `DRIVER` $\to$ `EVIDENCE` $\to$ `SEGMENT` $\to$ `CORROBORATION` $\to$ `ROOT_CAUSE`) linking every finding to exact query provenance IDs.
-- **⏪ Deterministic Investigation Replay:** Immutable snapshot engine allowing step-by-step playback of multi-step diagnostic reasoning without non-deterministic re-execution.
-- **🥊 Executive Challenge Mode:** Adversarial counterfactual audit console evaluating executive inquiries (*"Why not AOV?"*, *"What contradicts this?"*, *"Show weakest evidence"*, *"What would change conclusion?"*).
+Modern analytics, data science, and operational teams spend countless hours diagnosing executive questions like:
+> *"Why did revenue decline 28.4% last Tuesday?"*
+
+When organizations delegate these diagnostic investigations to generic LLMs, they encounter two fundamental failure modes:
+1. **Numerical Hallucination:** LLMs invent plausible-sounding percentages, ungrounded baseline comparisons, and contradictory metrics not supported by underlying transactional data.
+2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly concentrated (e.g., "São Paulo order volume fell") with *why* it occurred (e.g., "Carrier transit delays escalated +4.2 days, causing widespread SLA breaches").
 
 ---
 
-## 🏛️ System Architecture
+## Solution
 
-```mermaid
-flowchart TD
-    subgraph Client ["Frontend (React 18 + Vite + TypeScript)"]
-        UI["Forensic Dashboard"]
-        GraphUI["Evidence Graph (DAG)"]
-        ReplayUI["Deterministic Replay"]
-        ChallengeUI["Executive Challenge Mode"]
-    end
+**RootCause AI** eliminates both failure modes through an architecture where **the LLM is NOT the source of numerical truth**.
 
-    subgraph API ["FastAPI Service Layer"]
-        Router["API Endpoints (/api/v1)"]
-    end
+All KPI calculations, mathematical variance decompositions, statistical hypothesis tests, change-point detections, and causal hypothesis rankings are computed by **deterministic Python and SQL analytical engines**. The optional LLM layer functions strictly as an executive narrator, bounded by an active **Evidence-Grounded Claim Firewall** ensuring a 0% hallucination rate on the 115-scenario benchmark.
 
-    subgraph Agent ["Autonomous Investigation Agent Engine"]
-        Planner["Priority Planner"]
-        Executor["Step Executor"]
-        Decomp["Multiplicative Decomposition"]
-        Stat["Statistical Inference (Welch t, Wilson CI)"]
-        Ranker["Causal Ranker (Mechanism vs Segment)"]
-        Firewall["Claim Verification Firewall"]
-    end
+RootCause AI answers four core business questions during every investigation:
+- **What changed?** (Severity, observed vs rolling 7-day baseline, percentage delta)
+- **Why did it change?** (Exact multiplicative Volume vs AOV decomposition, operational indicators, segment drill-down)
+- **What evidence supports the conclusion?** (Deterministic Evidence Graph linking metrics to query provenance and statistical $p$-values)
+- **What should the business do next?** (Evidence-grounded, prioritized operational recommendations)
 
-    subgraph Storage ["Deterministic Data Layer (PostgreSQL)"]
-        Marts[("fact_order_analytics\n(Order Grain)")]
-        Daily[("fact_daily_kpis\n(Date Grain)")]
-        Cohorts[("dim_customer_cohorts\n(Customer Grain)")]
-    end
+---
 
-    subgraph Outputs ["Auditable Artifacts"]
-        DAG["7-Tier Forensic Evidence DAG"]
-        Snap["Immutable Replay Snapshot"]
-    end
+## Key Capabilities
 
-    UI & GraphUI & ReplayUI & ChallengeUI --> Router
-    Router --> Planner
-    Planner --> Executor
-    Executor --> Marts & Daily & Cohorts
-    Marts & Daily --> Decomp & Stat
-    Decomp & Stat --> Ranker --> Firewall --> DAG --> Snap --> Router
+- **🔍 Autonomous Investigation Agent:** Dynamic priority planner that traverses dimensional branches (Category, State, Seller, Logistics) without manual query authoring.
+- **➗ Exact Multiplicative Decomposition:** Mathematically decomposes GMV variance into Volume, Average Order Value (AOV), and Interaction effects down to the cent.
+- **📊 Statistical Inference Engine:** Validates metric shifts with two-sample Welch $t$-tests ($p < 0.05$), Wilson score intervals for operational proportions, and PELT / CUSUM change-point detection.
+- **🧭 Multi-Signal Causal Ranker:** Ranks root-cause candidates by fusing quantitative contribution, directional consistency, metric domain relevance, statistical confidence, and temporal change-point alignment. The system ranks evidence-supported causal hypotheses from observational business data; it does not claim experimental causal identification.
+- **🛡️ Evidence-Grounded Claim Verification:** Intercepts executive summary generation, parses numerical and directional statements, and verifies each claim against the analytical evidence pool before rendering.
+- **🕸️ Interactive Evidence Graph (DAG):** Directed Acyclic Graph tracing the causal provenance from incident down to verified transactional data.
+- **⏪ Deterministic Investigation Replay:** Immutable snapshot engine for auditing and reproducing investigations step-by-step.
+- **🥊 Executive Challenge Mode:** Counterfactual audit engine that systematically answers adversarial questions (*"Why not AOV?"*, *"What contradicts this?"*, *"Show weakest evidence"*).
+
+---
+
+## Investigation Workflow
+
+```
+Business Anomaly Detected
+         ↓
+KPI Multiplicative Decomposition (Volume vs. AOV Effects)
+         ↓
+Contributing-Driver & Dimensional Drill-Down (Category, State, Seller, Carrier)
+         ↓
+Multi-Signal Causal Ranking (Attribution × Directional Alignment × Statistical Confidence)
+         ↓
+Evidence Graph Construction (Provenance Tracking)
+         ↓
+Evidence-Grounded Claim Verification (0% Hallucination Rate on Benchmark)
+         ↓
+Evidence-Backed Narrative & Actionable Recommendations
 ```
 
 ---
 
-## 📈 Rigorous Empirical Evaluation & Benchmarks
+## Architecture
 
-RootCause AI is evaluated against 6 canonical business failure scenarios derived from the Olist Brazilian E-Commerce dataset across 60 verified claims and adversarial stress tests:
+```
+                      React Dashboard (TypeScript + Vite)
+                                      ↓
+                              FastAPI Service
+                                      ↓
+                         Investigation Agent Engine
+                                      ↓
+                              Analytics Engine
+ ┌─────────────────────────────────────────────────────────────────────────┐
+ │ • Anomaly Detection (Rolling Baselines & Z-Score Severity)             │
+ │ • KPI Decomposition (Multiplicative Volume vs AOV Effects)              │
+ │ • Change-Point Detection (PELT & CUSUM Regime Shifts)                  │
+ │ • Statistical Analysis (Welch t-test, Wilson Score CI, p-values)        │
+ │ • Causal Ranking (Multi-Signal Deterministic Hypothesis Scoring)        │
+ └─────────────────────────────────────────────────────────────────────────┘
+                                      ↓
+                            Evidence Graph (DAG)
+                                      ↓
+                          PostgreSQL Data Layer
+               (fact_order_analytics, fact_daily_kpis, marts)
 
-| Evaluation Metric | Baseline Agent | Improved RootCause AI Agent | Benchmark Target | Verified Result |
-| :--- | :---: | :---: | :---: | :---: |
-| **Top-1 Root Cause Accuracy** | 50.0% (3/6) | **100.0% (6/6)** | 100.0% | ✅ **100.0%** (6/6 scenarios) |
-| **Top-3 Accuracy** | 83.3% (5/6) | **100.0% (6/6)** | 100.0% | ✅ **100.0%** (6/6 scenarios) |
-| **Mean Reciprocal Rank (MRR)** | 0.6389 | **1.0000** | 1.0000 | ✅ **1.0000** |
-| **Evidence Grounding Rate** | 100.0% | **100.0%** | 100.0% | ✅ **100.0%** |
-| **Claim Grounding Rate** | 66.7% | **100.0% (60/60)** | 100.0% | ✅ **100.0%** (60/60 claims) |
-| **Claim Hallucination Rate** | 33.3% | **0.0%** | 0.0% (Zero Target) | ✅ **0.0%** (Zero ungrounded) |
-| **Numerical Accuracy** | 60.4% | **100.0%** | 100.0% | ✅ **100.0%** |
-| **Adversarial Detection Rate**| N/A | **100.0%** | 100.0% | ✅ **100.0%** |
-| **Average Latency** | 850 ms | **649 ms** | $< 1000$ ms | ✅ **649 ms** |
+ Optional Layer:
+   Investigation Agent ──► LLM Executive Narrator (OpenAI / Gemini)
+                       └──► Deterministic Rule Synthesizer (Fallback)
+```
 
 ---
 
-## 🛠️ Technology Stack
+## Evidence Graph
+
+The **Evidence Graph** provides a transparent, auditable causal DAG connecting each investigation finding:
+
+$$\text{Incident} \longrightarrow \text{Anomaly} \longrightarrow \text{Driver Mechanism} \longrightarrow \text{Supporting Evidence} \longrightarrow \text{Affected Segment} \longrightarrow \text{Root Cause}$$
+
+Every node contains verified mathematical metadata: observed values, baseline values, absolute deltas, percentage contributions, statistical significance flags ($p < 0.05$), and SQL execution provenance.
+
+---
+
+## Actionable Recommendations
+
+RootCause AI generates prioritized, evidence-backed operational actions directly derived from the identified causal mechanism:
+- **Logistics & Carrier SLA Degradation:** Audit regional dispatch hubs, trigger carrier penalty clauses, and re-route delayed fulfillment routes.
+- **Order Volume Contraction:** Audit top affected demographic segments, inspect acquisition spend, and review conversion funnel friction.
+- **AOV / Basket Size Contraction:** Evaluate category promotion discounting, adjust cross-sell bundles, and review high-ticket category inventory.
+- **Customer Satisfaction Decline:** Review recent delivery lead times in affected categories and inspect merchant return / refund rates.
+
+---
+
+## Evaluation & Benchmark
+
+RootCause AI is evaluated against an authoritative benchmark of **115 real-world business scenarios** derived from the Brazilian E-Commerce dataset (Olist). The system ranks evidence-supported causal hypotheses from observational business data; it does not claim experimental causal identification.
+
+| Metric | Measured Score | Benchmark Definition |
+| :--- | :---: | :--- |
+| **Scenarios Evaluated** | **115** | Authoritative real-world business scenarios from Olist data |
+| **Top-1 Root Cause Accuracy** | **87.0%** (100/115) | Primary causal mechanism correctly ranked at Rank #1 |
+| **Top-3 Accuracy** | **96.5%** (111/115) | Primary causal mechanism ranked within Top-3 candidates |
+| **Mean Reciprocal Rank (MRR)** | **0.9174** | Average reciprocal rank of true causal mechanism ($1/\text{rank}$) |
+| **Evidence Grounding Rate** | **100.0%** | Proportion of analytical claims grounded in verified marts |
+| **Claim Hallucination Rate** | **0.0%** | 0% hallucination rate on the 115-scenario benchmark |
+| **Average Investigation Latency** | **719.9 ms** | End-to-end diagnostic pipeline execution time |
+
+### Performance by Scenario Difficulty
+
+- **Easy (45 scenarios):** Top-1 = **88.9%** (40/45) | Top-3 = 97.8% | MRR = **0.9333**
+- **Medium (48 scenarios):** Top-1 = **89.6%** (43/48) | Top-3 = 97.9% | MRR = **0.9271**
+- **Hard (22 scenarios):** Top-1 = **77.3%** (17/22) | Top-3 = 90.9% | MRR = **0.8636**
+
+---
+
+## Tech Stack
 
 | Layer | Technologies |
 | :--- | :--- |
-| **Data & Database** | PostgreSQL (Supabase / Render), DuckDB, Polars, PyArrow, Psycopg 3 |
-| **Backend & API** | Python 3.12, FastAPI, Pydantic v2, Uvicorn, uv |
-| **Statistical & ML** | SciPy, Statsmodels, Scikit-Learn, Welch $t$-test, Wilson bounds, PELT |
+| **Analytics & Engine** | Python 3.12, DuckDB, Polars, PyArrow, SciPy, Statsmodels, Scikit-Learn |
+| **API & Backend** | FastAPI, Pydantic v2, Uvicorn, Psycopg 3, uv |
+| **Database** | PostgreSQL (Supabase / Render) with dimensional analytics marts |
 | **Frontend & UI** | React 18, TypeScript, Vite, TailwindCSS, Lucide Icons |
-| **Quality & MLOps** | Pytest (258 tests), Vitest (5 tests), Mypy, Ruff, Docker, GitHub Actions |
+| **Quality & MLOps** | Pytest (269 tests), Mypy (strict), Ruff (linter & formatter), Docker |
 
 ---
 
-## 💻 Quickstart & Local Setup
+## Repository Structure
 
-### 1. Clone & Configure Environment
-```bash
-git clone https://github.com/Ishita-1408/RootCause-AI.git
-cd RootCause-AI
-cp .env.example .env
+```
+RootCauseAI/
+├── apps/
+│   ├── ai/              # LLM provider abstractions & deterministic fallbacks
+│   ├── analytics/       # Core analytics engine (decomposition, stats, ranker, graph)
+│   ├── api/             # FastAPI routers and request schemas
+│   └── web/             # React 18 frontend dashboard and visualization components
+├── docs/                # Architecture specifications, limitations, and demo scripts
+├── evaluation/          # Benchmark suite (115 scenarios, metrics, runner, reports)
+├── scripts/             # Data ingestion and analytical mart builders
+├── supabase/            # Database migrations and mart schema definitions
+└── tests/               # 269 automated unit, integration, and benchmark tests
 ```
 
-### 2. Install Dependencies
-```bash
-# Python Virtual Environment & Packages (via uv)
-uv sync --all-groups
+---
 
-# Frontend Dependencies (via npm)
+## Local Development
+
+### 1. Prerequisites
+- Python 3.12+ and [uv](https://github.com/astral-sh/uv)
+- Node.js 18+ and npm
+- PostgreSQL database (or local SQLite/DuckDB fallback)
+
+### 2. Setup & Installation
+```bash
+# Clone repository
+git clone https://github.com/Ishita-1408/RootCause-AI.git
+cd RootCause-AI
+
+# Configure environment
+cp .env.example .env
+
+# Install Python & Frontend dependencies
+uv sync --all-groups
 cd apps/web && npm install && cd ../..
 ```
 
-### 3. Initialize Database Marts
+### 3. Initialize Analytical Marts
 ```bash
 uv run python scripts/ingest_olist.py
 uv run python scripts/build_analytical_marts.py
@@ -143,93 +214,38 @@ uv run python scripts/build_analytical_marts.py
 
 ### 4. Run Development Servers
 ```bash
-# Terminal 1: Backend API (http://localhost:8000)
+# Terminal 1: FastAPI Backend (http://localhost:8000)
 uv run uvicorn apps.api.main:app --reload --port 8000
 
-# Terminal 2: React Dashboard (http://localhost:5173)
+# Terminal 2: React Frontend (http://localhost:5173)
 cd apps/web && npm run dev
 ```
 
----
-
-## 🐳 Docker Deployment
-
-RootCause AI provides a multi-stage, non-root unified container build:
+### 5. Run Tests & Validation
 ```bash
-# Start full stack (PostgreSQL + FastAPI + React SPA)
-docker compose up --build
-```
-Access the application at `http://localhost:8000`.
-
----
-
-## 🧪 Running Quality Gates & Benchmarks
-
-Run the complete 8-tier verification suite with a single command:
-```bash
-uv run python scripts/verify.py
-```
-Or run individual test suites:
-```bash
-# Fast pytest suite (269 tests)
 uv run pytest -q
-
-# Canonical Causal Benchmark
-uv run python -m evaluation.runners.run_benchmark --verbose
-
-# Claim-Level Hallucination Evaluator
-uv run python -m evaluation.runners.run_hallucination_benchmark --verbose
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy apps evaluation tests
 ```
 
 ---
 
-## 📂 Project Structure
+## Deployment
 
-```
-RootCauseAI/
-├── apps/
-│   ├── ai/                    # Natural language memo synthesizer
-│   ├── analytics/             # Deterministic calculations, stats, graph, replay, challenge
-│   ├── api/                   # FastAPI endpoints, database connection, and config
-│   └── web/                   # React 18 + Vite + TypeScript frontend SPA
-├── evaluation/
-│   ├── hallucination/         # Claim-level hallucination verification framework
-│   ├── metrics/               # Causal evaluation metrics (Top-1, Top-3, MRR, Grounding)
-│   ├── runners/               # Benchmark execution runners
-│   └── scenarios/             # 6 canonical benchmark business failure scenarios
-├── tests/                     # 258 backend unit & integration tests
-├── scripts/                   # Ingestion, mart building, smoke tests, verify.py
-├── docs/                      # Comprehensive technical documentation
-│   ├── ARCHITECTURE.md        # System design, data flow, and causal hierarchy
-│   ├── BASELINE_VS_IMPROVED.md# Quantitative baseline vs improved agent experiment
-│   ├── DEMO_SCRIPT.md         # 3-minute interactive demo script
-│   ├── LIMITATIONS.md         # Senior-engineer scope & assumptions
-│   └── LOCAL_DEVELOPMENT.md   # Setup, seeding, testing, and deployment
-├── .github/workflows/ci.yml   # GitHub Actions CI quality gate
-├── render.yaml                # Render Web Service Blueprint
-├── build.sh                   # Render production build script
-├── Dockerfile                 # Multi-stage non-root container build
-├── docker-compose.yml         # Full-stack container orchestration
-├── pyproject.toml             # Python package dependencies & tool config
-└── README.md                  # GitHub portfolio centerpiece
+RootCause AI is containerized via Docker and deployable to cloud container platforms like Render:
+```bash
+# Build Docker image
+docker build -t rootcause-ai .
+
+# Run Docker container
+docker run -p 8000:8000 --env-file .env rootcause-ai
 ```
 
 ---
 
-## 🔬 3-Minute Interactive Demo Walkthrough
+## Limitations
 
-1. **Launch Live Demo:** Open [https://rootcause-ai-mcbj.onrender.com](https://rootcause-ai-mcbj.onrender.com).
-2. **Select Anomaly:** Navigate to **What Changed** and select `2017-11-20` (GMV drop).
-3. **Run Investigation:** Observe the Autonomous Agent execute its 5 progressive diagnostic stages.
-4. **Inspect Evidence Graph:** Click **Evidence Graph** in the sidebar to trace the 7-tier DAG from Incident to Root Cause.
-5. **Replay Investigation:** Open **Investigation Replay** to step through intermediate query states.
-6. **Challenge Conclusion:** Open **Challenge Mode** and query *"Why not Average Order Value?"* to review the mathematical decomposition proof.
-
-*See [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) for full timestamp breakdown.*
-
----
-
-## ⚖️ License & Attribution
-
-Developed by **Ishita** as an enterprise-grade AI/ML Engineering & Data Science portfolio centerpiece.
-Dataset: Brazilian E-Commerce Public Dataset by Olist (Kaggle).
+- **Observational Causal Hypothesis Ranking:** The system ranks evidence-supported causal hypotheses from observational business data; it does not claim experimental causal identification.
+- **Analytical Mart Ingestion:** Requires batch analytical marts (`fact_order_analytics`, `fact_daily_kpis`) rather than raw unbounded real-time message streams.
+- **Demo Deployment:** The demo environment is public and unauthenticated to enable immediate benchmark and API inspection without login barriers.

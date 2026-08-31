@@ -337,7 +337,7 @@ def verify_single_claim(
             elif matched_evidence.delta is not None:
                 expected_val = matched_evidence.delta
         elif claim.derived_formula == "contribution_percentage":
-            if "contribution_pct" in matched_evidence.raw_details:
+            if matched_evidence.raw_details.get("contribution_pct") is not None:
                 expected_val = float(matched_evidence.raw_details["contribution_pct"])
             elif matched_evidence.delta_pct is not None:
                 expected_val = matched_evidence.delta_pct
@@ -347,7 +347,7 @@ def verify_single_claim(
                 if claim.derived_formula == "volume_effect"
                 else "aov_effect"
             )
-            if key in matched_evidence.raw_details:
+            if matched_evidence.raw_details.get(key) is not None:
                 expected_val = float(matched_evidence.raw_details[key])
         else:
             expected_val = matched_evidence.observed_value

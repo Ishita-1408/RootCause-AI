@@ -10,7 +10,7 @@ The RootCause AI Evaluation & Benchmark Framework provides an automated, reprodu
 evaluation/
 ├── scenarios/
 │   ├── models.py          # GroundTruthScenario & GroundTruthRootCause schema
-│   ├── registry.py        # Controlled incident scenario definitions (SCN-001 to SCN-006)
+│   ├── registry.py        # Authoritative incident scenario definitions (115 scenarios: SCN-001 to SCN-115)
 │   └── __init__.py
 ├── metrics/
 │   ├── models.py          # EvaluationResult & BenchmarkSummary schema
@@ -29,14 +29,10 @@ evaluation/
 
 ## 2. Benchmark Incident Scenarios
 
-| Scenario ID | Name | Target Metric | Primary Ground-Truth Cause | Expected Direction |
-| :--- | :--- | :--- | :--- | :--- |
-| **`SCN-001`** | Warehouse Capacity Contraction | `late_delivery_rate_pct` | Logistics / Fulfillment Bottleneck (`delivery`) | `increase` |
-| **`SCN-002`** | Marketing Spend Contraction | `total_gmv` | Order Volume Drop (`order_volume`) | `decrease` |
-| **`SCN-003`** | Product Pricing & Basket Shift | `total_gmv` | Basket Value Expansion (`average_order_value`) | `increase` |
-| **`SCN-004`** | Delivery Partner Degradation | `late_delivery_rate_pct` | Carrier Transit SLA Degradation (`delivery`) | `increase` |
-| **`SCN-005`** | Payment Friction & Basket Shift | `total_gmv` | Average Order Value Contraction (`average_order_value`) | `decrease` |
-| **`SCN-006`** | Customer Acquisition Surge | `total_gmv` | Order Volume Surge (`order_volume`) | `increase` |
+The evaluation suite contains **115 authoritative scenarios** stratified across three difficulty tiers:
+- **Easy (45 scenarios):** Clear, dominant single driver (e.g. concentrated volume surge or single carrier SLA degradation).
+- **Medium (48 scenarios):** Multi-factor drivers with interacting volume, pricing, or regional shifts.
+- **Hard (22 scenarios):** Competing drivers, countervailing noise, distractor slices, and ambiguous signals.
 
 ---
 
