@@ -87,48 +87,8 @@ Evidence-Backed Narrative & Actionable Recommendations
 ---
 
 ## Architecture
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/d78af1ea-8715-48dd-8524-2788ade3aefb" />
 
-```mermaid
-flowchart TD
-    subgraph Client ["1. Frontend Layer"]
-        UI["React 18 + Vite + TypeScript Dashboard\n(Forensic Views · Evidence Graph DAG · Replay · Challenge Console)"]
-    end
-
-    subgraph API ["2. API Layer"]
-        Router["FastAPI Service (/api/v1)\n(Request Validation · Schemas · Direct Endpoints)"]
-    end
-
-    subgraph Agent ["3. Autonomous Investigation Agent"]
-        Planner["Dynamic Priority Planner & Step Executor\n(Trajectory Provenance Logging)"]
-    end
-
-    subgraph Analytics ["4. Deterministic Analytics Engine"]
-        Engine["• Anomaly Detection (Rolling Z-Score)\n• KPI Multiplicative Decomposition\n• Dimensional Drill-Down (Category, State, Seller)\n• Change-Point Detection (PELT & CUSUM)\n• Statistical Inference (Welch t-test, Wilson CI)\n• Multi-Signal Causal Hypothesis Ranking"]
-    end
-
-    subgraph Evidence ["5. Evidence & Verification Layer"]
-        DAG["Evidence Graph (Causal Provenance DAG)"]
-        Firewall["Evidence-Grounded Claim Verification Firewall"]
-    end
-
-    subgraph Storage ["6. Deterministic Data Layer"]
-        DB[("PostgreSQL Analytical Marts\nfact_order_analytics · fact_daily_kpis · dim_customer_cohorts")]
-    end
-
-    subgraph Synthesis ["Optional Executive Synthesis"]
-        LLM["LLM Executive Narrator (OpenAI / Gemini)"]
-        Fallback["Deterministic Rule Synthesizer (Fallback)"]
-    end
-
-    UI --> Router
-    Router --> Planner
-    Planner --> Engine
-    Engine --> DB
-    Engine --> DAG
-    DAG --> Firewall
-    Firewall --> LLM & Fallback
-    LLM & Fallback --> Router
-```
 
 *For detailed component specifications and DAG node schemas, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).*
 
