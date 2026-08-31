@@ -7,8 +7,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB.svg)](https://reactjs.org/)
-[![Top-1 Accuracy](https://img.shields.io/badge/Benchmark%20Top--1-87.0%25%20(115%20Scenarios)-brightgreen.svg)]()
-[![Benchmark Hallucination](https://img.shields.io/badge/Benchmark%20Hallucination-0.0%25-brightgreen.svg)]()
+[![Benchmark Top-1](https://img.shields.io/badge/Benchmark%20Top--1-87.0%25%20(115%20Scenarios)-brightgreen.svg)]()
 [![Pytest](https://img.shields.io/badge/Pytest-269%20passed-success.svg)]()
 [![Type Checked](https://img.shields.io/badge/Mypy-strict%20checked-blue.svg)]()
 
@@ -21,18 +20,18 @@
 
 RootCause AI is an autonomous business diagnostics platform that investigates business KPI anomalies, deterministically isolates contributing drivers, ranks competing causal hypotheses across multiple statistical signals, constructs an auditable Evidence Graph DAG, and produces evidence-backed operational recommendations.
 
-**87.0% Top-1 Accuracy** &nbsp;|&nbsp; **96.5% Top-3 Accuracy** &nbsp;|&nbsp; **115 Real-Data Scenarios** &nbsp;|&nbsp; **0.0% Claim Hallucination Rate on Benchmark**
+**87.0% Top-1 Accuracy** &nbsp;|&nbsp; **96.5% Top-3 Accuracy** &nbsp;|&nbsp; **0.9174 MRR** &nbsp;|&nbsp; **115 Real-Data Scenarios**
 
 ---
 
 ## Problem
 
-Modern analytics, data science, and operational teams spend countless hours diagnosing executive questions like:
+Modern analytics, data science, and operational teams spend countless hours diagnosing executive inquiries like:
 > *"Why did Gross Merchandise Value (GMV) drop 28.4% last Tuesday?"*
 
-When organizations delegate these diagnostic investigations to generic Large Language Models (LLMs), they encounter two fundamental failure modes:
+When organizations delegate diagnostic investigations to generic Large Language Models (LLMs), they encounter two fundamental failure modes:
 1. **Numerical Hallucination:** LLMs invent plausible-sounding percentages, ungrounded baseline comparisons, and contradictory metrics not supported by underlying transactional feature marts.
-2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly concentrated (e.g., "São Paulo order volume fell") with *why* it occurred (e.g., "Carrier transit delays escalated +4.2 days, causing widespread SLA breaches").
+2. **Conflating Association with Causation:** LLMs routinely confuse *where* an anomaly concentrated (e.g., "São Paulo order volume fell") with *why* it occurred (e.g., "Carrier transit delays escalated +4.2 days, causing widespread delivery SLA breaches").
 
 ---
 
@@ -80,7 +79,7 @@ Multi-Signal Causal Hypothesis Ranking (Contribution × Direction × Confidence)
          ↓
 Evidence Graph Construction (Provenance Tracking)
          ↓
-Evidence-Grounded Claim Verification (0.0% Hallucination Rate on Benchmark)
+Evidence-Grounded Claim Verification (Validates Natural Language against Evidence Pool)
          ↓
 Evidence-Backed Narrative & Actionable Recommendations
 ```
@@ -91,40 +90,29 @@ Evidence-Backed Narrative & Actionable Recommendations
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Frontend Layer (React 18 + Vite + TypeScript)"]
-        UI["Forensic Dashboard"]
-        GraphUI["Interactive Evidence Graph (DAG)"]
-        ReplayUI["Deterministic Investigation Replay"]
-        ChallengeUI["Executive Challenge Mode"]
+    subgraph Client ["1. Frontend Layer"]
+        UI["React 18 + Vite + TypeScript Dashboard\n(Forensic Views · Evidence Graph DAG · Replay · Challenge Console)"]
     end
 
-    subgraph API ["API Layer (FastAPI)"]
-        Router["FastAPI Routers (/api/v1)"]
+    subgraph API ["2. API Layer"]
+        Router["FastAPI Service (/api/v1)\n(Request Validation · Schemas · Direct Endpoints)"]
     end
 
-    subgraph Agent ["Autonomous Investigation Agent"]
-        Planner["Dynamic Priority Planner"]
-        Executor["Step Executor & Provenance Logger"]
+    subgraph Agent ["3. Autonomous Investigation Agent"]
+        Planner["Dynamic Priority Planner & Step Executor\n(Trajectory Provenance Logging)"]
     end
 
-    subgraph Analytics ["Deterministic Analytics Engine"]
-        Anomaly["Anomaly Detection (Rolling Baseline & Z-Score)"]
-        Decomp["Multiplicative KPI Decomposition (Volume vs AOV)"]
-        Drill["Dimensional Drill-Down (Category, State, Seller)"]
-        ChangePoint["Change-Point Detection (PELT & CUSUM)"]
-        StatEngine["Statistical Inference (Welch t-test, Wilson CI)"]
-        Ranker["Multi-Signal Causal Hypothesis Ranking"]
+    subgraph Analytics ["4. Deterministic Analytics Engine"]
+        Engine["• Anomaly Detection (Rolling Z-Score)\n• KPI Multiplicative Decomposition\n• Dimensional Drill-Down (Category, State, Seller)\n• Change-Point Detection (PELT & CUSUM)\n• Statistical Inference (Welch t-test, Wilson CI)\n• Multi-Signal Causal Hypothesis Ranking"]
     end
 
-    subgraph GraphLayer ["Evidence & Verification Layer"]
+    subgraph Evidence ["5. Evidence & Verification Layer"]
         DAG["Evidence Graph (Causal Provenance DAG)"]
         Firewall["Evidence-Grounded Claim Verification Firewall"]
     end
 
-    subgraph Storage ["Deterministic Data Layer (PostgreSQL)"]
-        Marts[("fact_order_analytics\n(Order Grain)")]
-        DailyKPIs[("fact_daily_kpis\n(Date Grain)")]
-        Cohorts[("dim_customer_cohorts\n(Customer Grain)")]
+    subgraph Storage ["6. Deterministic Data Layer"]
+        DB[("PostgreSQL Analytical Marts\nfact_order_analytics · fact_daily_kpis · dim_customer_cohorts")]
     end
 
     subgraph Synthesis ["Optional Executive Synthesis"]
@@ -132,17 +120,17 @@ flowchart TD
         Fallback["Deterministic Rule Synthesizer (Fallback)"]
     end
 
-    UI & GraphUI & ReplayUI & ChallengeUI --> Router
+    UI --> Router
     Router --> Planner
-    Planner --> Executor
-    Executor --> Anomaly & Decomp & Drill & ChangePoint & StatEngine
-    Anomaly & Decomp & Drill & ChangePoint & StatEngine --> Marts & DailyKPIs & Cohorts
-    Anomaly & Decomp & Drill & ChangePoint & StatEngine --> Ranker
-    Ranker --> DAG
+    Planner --> Engine
+    Engine --> DB
+    Engine --> DAG
     DAG --> Firewall
     Firewall --> LLM & Fallback
     LLM & Fallback --> Router
 ```
+
+*For detailed component specifications and DAG node schemas, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).*
 
 ---
 
@@ -184,10 +172,10 @@ RootCause AI is evaluated against an authoritative benchmark of **115 real-world
 | **Top-3 Accuracy** | **96.5%** (111/115) | Primary causal mechanism ranked within Top-3 candidates |
 | **Mean Reciprocal Rank (MRR)** | **0.9174** | Average reciprocal rank of true causal mechanism ($1/\text{rank}$) |
 | **Evidence Grounding Rate** | **100.0%** | Proportion of analytical claims grounded in verified marts |
-| **Claim Hallucination Rate** | **0.0%** | 0.0% claim hallucination rate on the 115-scenario benchmark |
+| **Unsupported Claims Detected** | **0.0%** | 0.0% unsupported claims detected on this benchmark |
 | **Average Investigation Latency** | **719.9 ms** | End-to-end diagnostic pipeline execution time |
 
-> *The 0.0% hallucination figure is a measured result on this benchmark, not a guarantee of zero hallucinations in arbitrary future use.*
+> *No unsupported claims were detected by the verification layer across the 115 benchmark scenarios. This benchmark result is not a guarantee against hallucinations in arbitrary future use.*
 
 ### Performance by Scenario Difficulty
 
@@ -299,8 +287,8 @@ docker run -p 8000:8000 --env-file .env rootcause-ai
 
 ## Documentation
 
-- [`docs/ARCHITECTURE.md`](file:///c:/Users/Ishit/OneDrive/Desktop/RootCauseAI/docs/ARCHITECTURE.md) — System design, 7-stage investigation lifecycle, and Evidence Graph DAG.
-- [`docs/LIMITATIONS.md`](file:///c:/Users/Ishit/OneDrive/Desktop/RootCauseAI/docs/LIMITATIONS.md) — Observational causal hypothesis bounds, statistical assumptions, and unauthenticated demo access model.
-- [`docs/LOCAL_DEVELOPMENT.md`](file:///c:/Users/Ishit/OneDrive/Desktop/RootCauseAI/docs/LOCAL_DEVELOPMENT.md) — Setup, data ingestion, local server execution, and Docker commands.
-- [`docs/DEMO_SCRIPT.md`](file:///c:/Users/Ishit/OneDrive/Desktop/RootCauseAI/docs/DEMO_SCRIPT.md) — 3-minute structured interactive demo script.
-- [`evaluation/README.md`](file:///c:/Users/Ishit/OneDrive/Desktop/RootCauseAI/evaluation/README.md) — 115-scenario benchmark specification and difficulty tier breakdown.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — System design, 7-stage investigation lifecycle, and Evidence Graph DAG.
+- [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — Observational causal hypothesis bounds, statistical assumptions, and unauthenticated demo access model.
+- [`docs/LOCAL_DEVELOPMENT.md`](docs/LOCAL_DEVELOPMENT.md) — Setup, data ingestion, local server execution, and Docker commands.
+- [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — 3-minute structured interactive demo script.
+- [`evaluation/README.md`](evaluation/README.md) — 115-scenario benchmark specification and difficulty tier breakdown.
